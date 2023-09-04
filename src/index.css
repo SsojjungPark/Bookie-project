@@ -9,4 +9,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  --light-yellow: #fef8e2;
+  --light-brown: #caa477;
+  --bright-coral: #f5cfb8;
+  --signup-input: #939393;
+  --placehodler-gray: #b8b8b8;
+  --brown-color: #b07127;
+  --black-color: #030303;
+  --orange-color: #fc461e;
+  --red-color: #ff0000;
+  --white-color: #ffffff;
+  --rose-color: #d34f4d;
 }
