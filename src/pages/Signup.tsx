@@ -85,6 +85,7 @@ export default Signup;
 
 const SignupContainer = styled.div`
   width: 100%;
+  background-color: var(--white-color);
 `;
 
 const SignupWrapper = styled.div`
