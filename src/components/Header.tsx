@@ -36,6 +36,7 @@ const Header = () => {
 export default Header;
 
 const HeaderContainer = styled.header`
+  display: fixed;
   width: 100%;
   height: 90px;
   background-color: var(--light-yellow);
