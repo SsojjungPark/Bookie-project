@@ -101,7 +101,7 @@ const Logo = styled.h1`
   font-family: 'Lucida Bright Demibold V1';
   font-size: 20px;
   letter-spacing: 1px;
-  color: #b07127;
+  color: var(--logo-color);
 `;
 
 const Title = styled.h2`
