@@ -1,12 +1,14 @@
 import './App.css';
-import Login from './pages/Login';
+import Header from './components/Header';
 // import Signup from './pages/Signup';
+// import Login from './pages/Login';
 
 function App() {
   return (
     <>
       {/* <Signup /> */}
-      <Login />
+      {/* <Login /> */}
+      <Header />
     </>
   );
 }
