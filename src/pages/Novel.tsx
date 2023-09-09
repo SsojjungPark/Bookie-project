@@ -16,7 +16,7 @@ const Novel = () => {
         <ReviewList />
 
         <WriteBtn type="button">
-          <FontAwesomeIcon icon={faPen} />
+          <WriteIcon icon={faPen} />
           글쓰기
         </WriteBtn>
       </ReviewWrapper>
@@ -46,4 +46,19 @@ const Title = styled.h2`
 const WriteBtn = styled.button`
   float: right;
   margin-top: 40px;
+  width: 85px;
+  height: 38px;
+  font-size: 14px;
+  background-color: #f5f5f5;
+  border: 1px solid var(--signup-input);
+  border-radius: 3px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const WriteIcon = styled(FontAwesomeIcon)`
+  font-size: 14px;
+  margin-right: 5px;
 `;
