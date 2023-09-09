@@ -130,6 +130,7 @@ table {
 
 html,
 body,
-input {
+input,
+button {
   box-sizing: border-box;
 }
