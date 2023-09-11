@@ -77,6 +77,7 @@ const CategoriesUl = styled.ul`
 
 const Category = styled.li`
   line-height: 30px;
+  font-size: 18px;
 
   &:hover {
     cursor: pointer;
