@@ -158,6 +158,7 @@ const Input = styled.input`
   border: 1px solid var(--signup-input);
   border-radius: 3px;
   font-size: 15px;
+  outline: none;
 
   &::placeholder {
     font-size: 13px;
@@ -165,8 +166,7 @@ const Input = styled.input`
   }
 
   &:focus {
-    outline: none;
-    border: 2px solid var(--rose-color);
+    border: 2px solid var(--signup-input);
   }
 `;
 
