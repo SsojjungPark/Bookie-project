@@ -10,6 +10,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
+  /* colors */
   --light-yellow: #fef8e2;
   --light-brown: #caa477;
   --bright-coral: #f5cfb8;
@@ -22,4 +23,7 @@
   --red-color: #f53535;
   --white-color: #ffffff;
   --rose-color: #d34f4d;
+
+  /* border-raidus */
+  --border-raidus: 3px;
 }
