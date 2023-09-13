@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import Header from '../components/Header';
-import Commnet from '../components/Comment';
+import Comment from '../components/Comment';
 import Footer from '../components/Footer';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -42,6 +42,7 @@ const ReviewPost = () => {
               <UserInfo>
                 <ProfileImg
                   src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                  alt="프로필사진"
                   width="40px"
                   height="40px"
                 />
@@ -67,7 +68,7 @@ const ReviewPost = () => {
             </CommentArea>
           </LikeCommentWrapper>
 
-          <Commnet />
+          <Comment />
         </ReviewCommentWrapper>
       </ReviewPostContainer>
 
@@ -195,6 +196,7 @@ const LikeCommentWrapper = styled.div`
   display: flex;
   align-items: center;
   padding-bottom: 25px;
+  border-bottom: 1px solid #d9d9d9;
 `;
 
 const LikeArea = styled.div`
