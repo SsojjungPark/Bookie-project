@@ -120,7 +120,7 @@ const BookTitle = styled.div`
 const WriterPublisherWrapper = styled.div`
   display: flex;
   font-size: 14px;
-  color: #595959;
+  color: var(--dark-gray);
 `;
 
 const BookWriter = styled.div`

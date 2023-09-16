@@ -98,7 +98,7 @@ const ReviewTitle = styled.div`
 const NicknameDateWrapper = styled.div`
   display: flex;
   font-size: 15px;
-  color: #595959;
+  color: var(--dark-gray);
 `;
 
 const Nickname = styled.div`

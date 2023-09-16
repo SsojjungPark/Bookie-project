@@ -29,7 +29,7 @@ const Novel = () => {
 export default Novel;
 
 const ReviewContainer = styled.div`
-  background-color: var(--white-color;);
+  background-color: var(--white-color;);x
 `;
 
 const ReviewWrapper = styled.div`
