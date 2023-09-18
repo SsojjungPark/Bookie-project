@@ -156,7 +156,7 @@ const Input = styled.input`
   height: 48px;
   padding: 0 10px;
   border: 1px solid var(--signup-input);
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   font-size: 15px;
   outline: none;
 
@@ -201,7 +201,7 @@ const SignupBtn = styled.button`
   width: 100%;
   height: 48px;
   border: none;
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   color: var(--white-color);
   background-color: var(--light-brown);
   font-weight: 600;

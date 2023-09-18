@@ -65,7 +65,7 @@ const CommentBox = styled.textarea`
   height: 55px;
   padding: 10px;
   outline: none;
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   border: 1px solid var(--signup-input);
   resize: none;
   font-size: 13px;
@@ -90,7 +90,7 @@ const RegisterBtn = styled.input`
   font-size: 14px;
   color: var(--white-color);
   border: none;
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
 
   &:hover {
     cursor: pointer;
@@ -156,7 +156,7 @@ const BtnsWrapperUl = styled.ul`
   right: 0;
   width: 100px;
   padding-top: 5px;
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   background-color: var(--white-color);
   box-shadow: 0 1px 12px 0 rgba(0, 0, 0, 0.09);
   display: none;

@@ -109,7 +109,7 @@ const GoogleLoginBtn = styled.button`
   height: 48px;
   border: 1px solid var(--signup-input);
   background-color: #f5f5f5;
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   font-size: 15px;
   color: rgba(29, 28, 28, 0.9);
 
@@ -170,7 +170,7 @@ const Input = styled.input`
   height: 48px;
   padding: 0 10px;
   border: 1px solid var(--signup-input);
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   font-size: 15px;
 
   &::placeholder {
@@ -215,7 +215,7 @@ const LoginBtn = styled.button`
   width: 100%;
   height: 48px;
   border: none;
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
   color: var(--white-color);
   background-color: var(--light-brown);
   font-weight: 600;

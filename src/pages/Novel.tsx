@@ -51,7 +51,7 @@ const WriteBtn = styled.button`
   font-size: 14px;
   background-color: #f5f5f5;
   border: 1px solid var(--signup-input);
-  border-radius: var(--border-raidus);
+  border-radius: var(--border-radius);
 
   &:hover {
     cursor: pointer;
