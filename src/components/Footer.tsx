@@ -17,6 +17,7 @@ const FooterContainer = styled.footer`
   justify-content: center;
   align-items: center;
   background-color: #1f1f1f;
+  margin-top: 100px;
 `;
 
 const CopyRight = styled.span`
