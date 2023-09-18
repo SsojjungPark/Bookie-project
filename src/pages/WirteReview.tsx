@@ -53,7 +53,6 @@ const WriteReviewContainer = styled.div`
   width: 1200px;
   margin: 0 auto;
   background-color: var(--white-color);
-  border: 1px solid red;
 `;
 
 const WriteReviewTitle = styled.div`
@@ -138,7 +137,6 @@ const InputTitle = styled.input`
 const WriteReviewArea = styled.div`
   width: 1200px;
   margin-top: 10px;
-  border: 1px solid blue;
 `;
 
 const EditorToolBox = styled.div`
