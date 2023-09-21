@@ -3,12 +3,39 @@ import { ReactComponent as GoogleLogo } from '../assets/googleLogo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { Link } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useState } from 'react';
+import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
+
+const eye = <FontAwesomeIcon icon={faEye} />;
+const eyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
+
+interface LoginInputs {
+  email: string;
+  password: string;
+}
 
 const Login = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<LoginInputs>();
+  const onSubmit: SubmitHandler<LoginInputs> = (data) => console.log('data', data);
+
+  const togglePwVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <LoginContainer>
       <LoginWrapper>
-        <Logo>Bookie</Logo>
+        <StyledLink to="/">
+          <Logo>Bookie</Logo>
+        </StyledLink>
         <Title>로그인</Title>
 
         <LoginOptionWrapper>
@@ -22,32 +49,46 @@ const Login = () => {
           <Divider>OR</Divider>
 
           <LoginFormWrapper>
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <LoginFormBlock>
                 <Label>이메일</Label>
-                <Input type="text" name="email" placeholder="ex) abc123@naver.com" />
-                <ErrorMessage>
-                  <ErrorIcon icon={faCircleExclamation} />
-                  올바른 이메일 형식으로 입력해주세요.
-                </ErrorMessage>
+                <Input
+                  {...register('email', {
+                    required: '이메일을 다시 입력해주세요.',
+                    pattern: { value: EMAIL_REGEX, message: '올바른 이메일 형식으로 입력해주세요.' },
+                  })}
+                  type="text"
+                  placeholder="ex) abc123@naver.com"
+                />
+                {errors.email && (
+                  <ErrorMessage>
+                    <ErrorIcon icon={faCircleExclamation} />
+                    {errors.email.message}
+                  </ErrorMessage>
+                )}
               </LoginFormBlock>
               <LoginFormBlock>
                 <Label>비밀번호</Label>
                 <Input
-                  type="password"
-                  name="password"
-                  placeholder="8자리 이상의 알파벳, 숫자, 기호 조합"
+                  {...register('password', {
+                    required: '비밀번호를 다시 입력해주세요.',
+                    minLength: { value: 8, message: '8자 이상의 알파벳, 숫자, 기호 조합으로 입력해주세요.' },
+                    pattern: { value: PASSWORD_REGEX, message: '영문, 숫자, 기호 조합으로 입력해주세요.' },
+                  })}
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="8자 이상의 알파벳, 숫자, 기호 조합으로 입력해주세요."
                   autoComplete="off"
                 />
-                <HidePassword icon={faEyeSlash} />
-                <ShowPassword icon={faEye} />
-                <ErrorMessage>
-                  <ErrorIcon icon={faCircleExclamation} />
-                  8자리 이상의 알파벳 + 숫자 + 기호로 입력해주세요.
-                </ErrorMessage>
+                <PasswordIcon onClick={togglePwVisibility}>{showPassword ? eye : eyeSlash}</PasswordIcon>
+                {errors.password && (
+                  <ErrorMessage>
+                    <ErrorIcon icon={faCircleExclamation} />
+                    {errors.password.message}
+                  </ErrorMessage>
+                )}
               </LoginFormBlock>
 
-              <LoginBtn type="button">로그인</LoginBtn>
+              <LoginBtn type="submit" value="로그인" disabled={!isValid} />
             </form>
           </LoginFormWrapper>
         </LoginOptionWrapper>
@@ -71,6 +112,14 @@ const LoginWrapper = styled.div`
   width: 1200px;
   height: 1200px;
   margin: 0 auto;
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Logo = styled.h1`
@@ -172,6 +221,7 @@ const Input = styled.input`
   border: 1px solid var(--signup-input);
   border-radius: var(--border-radius);
   font-size: 15px;
+  outline: none;
 
   &::placeholder {
     font-size: 13px;
@@ -179,23 +229,19 @@ const Input = styled.input`
   }
 
   &:focus {
-    outline: none;
-    border: 2px solid var(--rose-color);
+    border: 2px solid var(--signup-input);
   }
 `;
 
-const HidePassword = styled(FontAwesomeIcon)`
+const PasswordIcon = styled.i`
   position: absolute;
   top: 41px;
   right: 15px;
   color: #4d4d4d;
-`;
 
-const ShowPassword = styled(FontAwesomeIcon)`
-  position: absolute;
-  top: 41px;
-  right: 15px;
-  color: #4d4d4d;
+  &: hover {
+    cursor: pointer;
+  }
 `;
 
 const ErrorIcon = styled(FontAwesomeIcon)`
@@ -210,7 +256,7 @@ const ErrorMessage = styled.div`
   margin-top: 10px;
 `;
 
-const LoginBtn = styled.button`
+const LoginBtn = styled.input`
   margin-top: 100px;
   width: 100%;
   height: 48px;
