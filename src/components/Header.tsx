@@ -1,19 +1,30 @@
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
     <HeaderContainer>
       <HeaderWrapper>
-        <Logo>Bookie</Logo>
+        <StyledLink to="/">
+          <Logo>Bookie</Logo>
+        </StyledLink>
 
         <Nav>
           <CategoriesUl>
-            <Category>소설</Category>
-            <Category>인문</Category>
-            <Category>자기계발</Category>
-            <Category>경제/사회</Category>
+            <Category>
+              <StyledLink to="/novel">소설</StyledLink>
+            </Category>
+            <Category>
+              <StyledLink to="/humanities">인문</StyledLink>
+            </Category>
+            <Category>
+              <StyledLink to="/selfImprovement">자기계발</StyledLink>
+            </Category>
+            <Category>
+              <StyledLink to="/economicSociety">경제/사회</StyledLink>
+            </Category>
           </CategoriesUl>
         </Nav>
 
@@ -24,8 +35,8 @@ const Header = () => {
           </SearchContaienr>
 
           <GoToWrapper>
-            <GoToLogin>로그인</GoToLogin>
-            <GoToSignup>회원가입</GoToSignup>
+            <LinkLogin to="/login">로그인</LinkLogin>
+            <LinkSingup to="/signup">회원가입</LinkSingup>
           </GoToWrapper>
         </HeaderRight>
       </HeaderWrapper>
@@ -49,6 +60,11 @@ const HeaderWrapper = styled.div`
   width: 1200px;
   height: 90px;
   margin: 0 auto;
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: var(--black-color);
 `;
 
 const Logo = styled.h1`
@@ -136,8 +152,17 @@ const GoToWrapper = styled.div`
   }
 `;
 
-const GoToLogin = styled.span`
-  margin-right: 12px;
-`;
+const linkStyles = {
+  textDecoration: 'none',
+  color: 'var(--black-color)',
+  fontSize: '15px',
 
-const GoToSignup = styled.span``;
+  '&:hover': {
+    fontWeight: '500',
+    cursor: 'pointer',
+  },
+};
+
+const LinkLogin = styled(Link)(linkStyles, { marginRight: '12px' });
+
+const LinkSingup = styled(Link)(linkStyles);
