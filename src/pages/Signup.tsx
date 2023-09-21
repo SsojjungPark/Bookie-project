@@ -92,14 +92,17 @@ const Signup = () => {
                 이메일 <span>*</span>
               </Label>
               <Input
-                {...register('email', { required: true, pattern: EMAIL_REGEX })}
+                {...register('email', {
+                  required: '이메일을 입력해주세요.',
+                  pattern: { value: EMAIL_REGEX, message: '올바른 이메일 형식으로 입력해주세요.' },
+                })}
                 type="text"
                 placeholder="ex) abc123@naver.com"
               />
               {errors.email && (
                 <ErrorMessageCon>
                   <ErrorIcon icon={faCircleExclamation} />
-                  올바른 이메일 형식으로 입력해주세요.
+                  {errors.email.message}
                 </ErrorMessageCon>
               )}
             </SignupFormBlock>
