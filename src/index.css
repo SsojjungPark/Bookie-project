@@ -16,6 +16,7 @@
   --bright-coral: #f5cfb8;
   --signup-input: #939393;
   --placehodler-gray: #b8b8b8;
+  --dark-gray: #595959;
   --logo-color: #b26000;
   --brown-color: #b07127;
   --black-color: #030303;
@@ -24,6 +25,6 @@
   --white-color: #ffffff;
   --rose-color: #d34f4d;
 
-  /* border-raidus */
-  --border-raidus: 3px;
+  /* border-radius */
+  --border-radius: 3px;
 }
