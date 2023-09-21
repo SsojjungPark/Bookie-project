@@ -112,8 +112,8 @@ const Signup = () => {
               </Label>
               <Input
                 {...register('password', {
-                  required: '8자 이상의 영문, 숫자, 기호 조합으로 입력해주세요.',
-                  minLength: { value: 8, message: '8자 이상 입력해주세요.' },
+                  required: '비밀번호를 입력해주세요.',
+                  minLength: { value: 8, message: '8자 이상의 알파벳, 숫자, 기호 조합으로 입력해주세요.' },
                   pattern: { value: PASSWORD_REGEX, message: '영문, 숫자, 기호 조합으로 입력해주세요.' },
                 })}
                 type={showPassword ? 'text' : 'password'}
@@ -260,13 +260,6 @@ const Input = styled.input`
   &:focus {
     border: 2px solid var(--signup-input);
   }
-`;
-
-const HidePassword = styled(FontAwesomeIcon)`
-  position: absolute;
-  top: 41px;
-  right: 15px;
-  color: #4d4d4d;
 `;
 
 const PasswordIcon = styled.i`
