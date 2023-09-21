@@ -1,20 +1,23 @@
 import './App.css';
-import ReviewPost from './pages/ReviewPost';
-// mport Novel from './pages/Novel';
-// import Signup from './pages/Signup';
-// import Login from './pages/Login';
-// import Header from './components/Header';
-// import Home from './pages/Home';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import Home from './pages/Home';
+import Novel from './pages/Novel';
+// import ReviewPost from './pages/ReviewPost';
+// import WriteReview from './pages/WirteReview';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <>
-      {/* <Signup /> */}
-      {/* <Login /> */}
-      {/* <Home /> */}
-      {/* <Novel /> */}
-      <ReviewPost />
-    </>
+    <Routes>
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={<Home />} />
+      {<Route path="/novel" element={<Novel />} />}
+      {/*  <Route path="/reviewpost" element={<ReviewPost />} /> */}
+
+      {/* <WriteReview /> */}
+    </Routes>
   );
 }
 
