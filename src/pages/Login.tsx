@@ -1,8 +1,7 @@
 import styled from '@emotion/styled';
 import { ReactComponent as GoogleLogo } from '../assets/googleLogo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { faCircleExclamation, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
@@ -51,7 +50,6 @@ const Login = () => {
           <LoginFormWrapper>
             <form onSubmit={handleSubmit(onSubmit)}>
               <LoginFormBlock>
-                <Label>이메일</Label>
                 <Input
                   {...register('email', {
                     required: '이메일을 다시 입력해주세요.',
@@ -60,6 +58,7 @@ const Login = () => {
                   type="text"
                   placeholder="ex) abc123@naver.com"
                 />
+                <Label>이메일</Label>
                 {errors.email && (
                   <ErrorMessage>
                     <ErrorIcon icon={faCircleExclamation} />
@@ -68,7 +67,6 @@ const Login = () => {
                 )}
               </LoginFormBlock>
               <LoginFormBlock>
-                <Label>비밀번호</Label>
                 <Input
                   {...register('password', {
                     required: '비밀번호를 다시 입력해주세요.',
@@ -79,6 +77,7 @@ const Login = () => {
                   placeholder="8자 이상의 알파벳, 숫자, 기호 조합으로 입력해주세요."
                   autoComplete="off"
                 />
+                <Label>비밀번호</Label>
                 <PasswordIcon onClick={togglePwVisibility}>{showPassword ? eye : eyeSlash}</PasswordIcon>
                 {errors.password && (
                   <ErrorMessage>
@@ -94,7 +93,7 @@ const Login = () => {
         </LoginOptionWrapper>
 
         <MoveToSignup>
-          아직 회원이 아니신가요?<span>회원가입</span>
+          아직 회원이 아니신가요?<MoveToSignupLink to="/signup">회원가입</MoveToSignupLink>
         </MoveToSignup>
       </LoginWrapper>
     </LoginContainer>
@@ -202,16 +201,11 @@ const LoginFormBlock = styled.div`
   clear: both;
   display: flex;
   flex-direction: column;
+  padding-top: 23px;
 
   &:not(:last-of-type) {
     margin-bottom: 45px;
   }
-`;
-
-const Label = styled.label`
-  margin-bottom: 10px;
-  font-size: 15px;
-  color: var(--signup-input);
 `;
 
 const Input = styled.input`
@@ -221,6 +215,7 @@ const Input = styled.input`
   border: 1px solid var(--signup-input);
   border-radius: var(--border-radius);
   font-size: 15px;
+  color: var(--black-color);
   outline: none;
 
   &::placeholder {
@@ -229,14 +224,29 @@ const Input = styled.input`
   }
 
   &:focus {
-    border: 2px solid var(--signup-input);
+    border: 2px solid var(--brown-color);
   }
+
+  &:focus + label {
+    color: var(--logo-color);
+    font-weight: 500;
+  }
+`;
+
+const Label = styled.label`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--logo-color);
 `;
 
 const PasswordIcon = styled.i`
   position: absolute;
-  top: 41px;
+  top: 39px;
   right: 15px;
+  font-size: 14px;
   color: #4d4d4d;
 
   &: hover {
@@ -257,7 +267,7 @@ const ErrorMessage = styled.div`
 `;
 
 const LoginBtn = styled.input`
-  margin-top: 100px;
+  margin-top: 85px;
   width: 100%;
   height: 48px;
   border: none;
@@ -281,7 +291,7 @@ const MoveToSignup = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 40px;
+  margin-top: 45px;
   color: #575757;
 
   span {
@@ -290,6 +300,16 @@ const MoveToSignup = styled.div`
   }
 
   span: hover {
+    cursor: pointer;
+    font-weight: 500;
+  }
+`;
+
+const MoveToSignupLink = styled(Link)`
+  margin-left: 8px;
+  color: #575757;
+
+  &: hover {
     cursor: pointer;
     font-weight: 500;
   }
