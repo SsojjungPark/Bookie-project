@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
 import { useRef, useState } from 'react';
@@ -56,9 +56,6 @@ const Signup = () => {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <SignupFormBlock>
-              <Label>
-                이름 <span>*</span>
-              </Label>
               <Input
                 {...register('name', {
                   required: '이름을 입력해주세요.',
@@ -72,25 +69,25 @@ const Signup = () => {
                   {errors.name.message}
                 </ErrorMessageCon>
               )}
+              <Label>
+                이름 <span>*</span>
+              </Label>
             </SignupFormBlock>
             <SignupFormBlock>
-              <Label>
-                닉네임 <span>*</span>
-              </Label>
               <Input
                 {...register('nickname', { required: true })}
                 type="text"
                 placeholder="영문, 한글, 숫자를 이용해 입력해주세요."
               />
+              <Label>
+                닉네임 <span>*</span>
+              </Label>
               <ErrorMessageCon>
                 <ErrorIcon icon={faCircleExclamation} />
                 이미 사용중인 닉네임 입니다.
               </ErrorMessageCon>
             </SignupFormBlock>
             <SignupFormBlock>
-              <Label>
-                이메일 <span>*</span>
-              </Label>
               <Input
                 {...register('email', {
                   required: '이메일을 입력해주세요.',
@@ -99,6 +96,9 @@ const Signup = () => {
                 type="text"
                 placeholder="ex) abc123@naver.com"
               />
+              <Label>
+                이메일 <span>*</span>
+              </Label>
               {errors.email && (
                 <ErrorMessageCon>
                   <ErrorIcon icon={faCircleExclamation} />
@@ -107,9 +107,6 @@ const Signup = () => {
               )}
             </SignupFormBlock>
             <SignupFormBlock>
-              <Label>
-                비밀번호 <span>*</span>
-              </Label>
               <Input
                 {...register('password', {
                   required: '비밀번호를 입력해주세요.',
@@ -120,6 +117,9 @@ const Signup = () => {
                 placeholder="8자 이상의 영문, 숫자, 기호 조합으로 입력해주세요."
                 autoComplete="off"
               />
+              <Label>
+                비밀번호 <span>*</span>
+              </Label>
               <PasswordIcon onClick={togglePwVisibility}>{showPassword ? eye : eyeSlash}</PasswordIcon>
               <ErrorMessage
                 errors={errors}
@@ -136,9 +136,6 @@ const Signup = () => {
               />
             </SignupFormBlock>
             <SignupFormBlock>
-              <Label>
-                비밀번호 확인<span>*</span>
-              </Label>
               <Input
                 {...register('passwordConfirm', {
                   required: '비밀번호를 다시 입력해주세요.',
@@ -148,6 +145,9 @@ const Signup = () => {
                 placeholder="비밀번호를 다시 입력해주세요."
                 autoComplete="off"
               />
+              <Label>
+                비밀번호 확인<span>*</span>
+              </Label>
               <PasswordIcon onClick={togglePwConfirmVisibility}>{showPwConfirm ? eye : eyeSlash}</PasswordIcon>
               {errors.passwordConfirm && (
                 <ErrorMessageCon>
@@ -226,20 +226,10 @@ const SignupFormBlock = styled.div`
   clear: both;
   display: flex;
   flex-direction: column;
+  padding-top: 23px;
 
   &:not(:last-of-type) {
     margin-bottom: 45px;
-  }
-`;
-
-const Label = styled.label`
-  margin-bottom: 10px;
-  font-size: 15px;
-  color: var(--signup-input);
-
-  span {
-    color: var(--red-color);
-    font-weight: 500;
   }
 `;
 
@@ -250,6 +240,7 @@ const Input = styled.input`
   border: 1px solid var(--signup-input);
   border-radius: var(--border-radius);
   font-size: 15px;
+  color: var(--black-color);
   outline: none;
 
   &::placeholder {
@@ -258,14 +249,34 @@ const Input = styled.input`
   }
 
   &:focus {
-    border: 2px solid var(--signup-input);
+    border: 2px solid var(--logo-color);
+  }
+
+  &:focus + label {
+    color: var(--logo-color);
+    font-weight: 500;
+  }
+`;
+
+const Label = styled.label`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  font-size: 14px;
+  color: var(--signup-input);
+
+  span {
+    color: var(--red-color);
+    font-weight: 500;
   }
 `;
 
 const PasswordIcon = styled.i`
   position: absolute;
-  top: 41px;
+  top: 39px;
   right: 15px;
+  font-size: 14px;
   color: #4d4d4d;
 
   &: hover {
