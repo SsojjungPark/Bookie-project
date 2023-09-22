@@ -16,9 +16,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Authentication and get a reference to the service
-const auth = getAuth(app);
+const firebaseAuth = getAuth(app);
 
 // Firestore 초기화
 const db = getFirestore(app);
 
-export { app, auth };
+export { app, firebaseAuth, db };

@@ -7,6 +7,9 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
 import { useRef, useState } from 'react';
 import { ErrorMessage } from '@hookform/error-message';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
 
 const eye = <FontAwesomeIcon icon={faEye} />;
 const eyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -31,13 +34,35 @@ const Signup = () => {
   } = useForm<FormInputs>({ mode: 'onChange', criteriaMode: 'all' });
   const passwordRef = useRef<string | null>(null);
   passwordRef.current = watch('password');
-  const onSubmit: SubmitHandler<FormInputs> = (data) => console.log('data', data);
+
+  const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    signupWithEmailandPassword(data);
+    console.log('data', data);
+  };
 
   const togglePwVisibility = () => {
     setShowPassword(!showPassword);
   };
   const togglePwConfirmVisibility = () => {
     setShowPwConfirm(!showPwConfirm);
+  };
+
+  const signupWithEmailandPassword = async (data: FormInputs) => {
+    try {
+      const auth = getAuth();
+      const createdUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+      const userInfo = await addDoc(collection(db, 'users'), {
+        uid: createdUser.user.uid,
+        name: data.name,
+        nickname: data.nickname,
+      });
+
+      console.log('회원가입 성공: ', createdUser);
+      console.log('유저정보: ', userInfo);
+    } catch (error) {
+      console.log('회원가입 실패: ', error);
+    }
   };
 
   return (
