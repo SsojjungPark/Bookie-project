@@ -4,12 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
-import { useRef, useState } from 'react';
+import { EMAIL_REGEX, NICKNAME_REGEX, PASSWORD_REGEX } from '../regex';
+import { useEffect, useRef, useState } from 'react';
 import { ErrorMessage } from '@hookform/error-message';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
+import { getDocs } from 'firebase/firestore';
 
 const eye = <FontAwesomeIcon icon={faEye} />;
 const eyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -25,17 +26,75 @@ interface FormInputs {
 const Signup = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showPwConfirm, setShowPwConfirm] = useState<boolean>(false);
+  const [isNicknameAvailable, setIsNIcknameAvailable] = useState<boolean>(true);
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors, isValid },
+    setError,
   } = useForm<FormInputs>({ mode: 'onChange', criteriaMode: 'all' });
+
   const passwordRef = useRef<string | null>(null);
   passwordRef.current = watch('password');
 
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
+  // firebase Auth 회원가입 연동
+  const signupWithEmailandPassword = async (data: FormInputs) => {
+    try {
+      const auth = getAuth();
+      const newUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+      const userInfo = await addDoc(collection(db, 'users'), {
+        uid: newUser.user.uid,
+        name: data.name,
+        nickname: data.nickname,
+      });
+
+      console.log('회원가입 성공: ', newUser);
+    } catch (error) {
+      console.log('회원가입 실패: ', error);
+    }
+  };
+
+  // firestore 닉네임 데이터 가져오기
+  const inputNickname = watch('nickname');
+
+  useEffect(() => {
+    // firestore 닉네임 데이터 가져오기
+    const fetchUsersNickname = async (inputNickname: string) => {
+      try {
+        const usersCollection = collection(db, 'users');
+        const querySnapshot = await getDocs(usersCollection);
+
+        const nicknamesArr = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return data.nickname;
+        });
+
+        // 닉네임 중복 확인
+        const isDuplicate = nicknamesArr.includes(inputNickname);
+
+        setIsNIcknameAvailable(!isDuplicate);
+
+        // 중복 된 경우 에러 메시지 설정
+        if (isDuplicate) {
+          setError('nickname', {
+            type: 'manual',
+            message: '이미 사용 중인 닉네임 입니다.',
+          });
+        }
+
+        console.log('fetchUsersData 성공');
+      } catch (error) {
+        console.log('fetchUsersData 실패: ', error);
+      }
+    };
+
+    fetchUsersNickname(inputNickname);
+  }, [inputNickname]);
+
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     signupWithEmailandPassword(data);
     console.log('data', data);
   };
@@ -45,24 +104,6 @@ const Signup = () => {
   };
   const togglePwConfirmVisibility = () => {
     setShowPwConfirm(!showPwConfirm);
-  };
-
-  const signupWithEmailandPassword = async (data: FormInputs) => {
-    try {
-      const auth = getAuth();
-      const createdUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
-
-      const userInfo = await addDoc(collection(db, 'users'), {
-        uid: createdUser.user.uid,
-        name: data.name,
-        nickname: data.nickname,
-      });
-
-      console.log('회원가입 성공: ', createdUser);
-      console.log('유저정보: ', userInfo);
-    } catch (error) {
-      console.log('회원가입 실패: ', error);
-    }
   };
 
   return (
@@ -100,17 +141,22 @@ const Signup = () => {
             </SignupFormBlock>
             <SignupFormBlock>
               <Input
-                {...register('nickname', { required: true })}
+                {...register('nickname', {
+                  required: '닉네임을 입력해주세요.',
+                  pattern: { value: NICKNAME_REGEX, message: '알파벳, 한글, 숫자를 이용해 입력해주세요.' },
+                })}
                 type="text"
                 placeholder="영문, 한글, 숫자를 이용해 입력해주세요."
               />
               <Label>
                 닉네임 <span>*</span>
               </Label>
-              <ErrorMessageCon>
-                <ErrorIcon icon={faCircleExclamation} />
-                이미 사용중인 닉네임 입니다.
-              </ErrorMessageCon>
+              {errors.nickname && (
+                <ErrorMessageCon>
+                  <ErrorIcon icon={faCircleExclamation} />
+                  {errors.nickname?.message}
+                </ErrorMessageCon>
+              )}
             </SignupFormBlock>
             <SignupFormBlock>
               <Input
