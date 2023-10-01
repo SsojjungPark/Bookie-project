@@ -53,7 +53,9 @@ const Signup = () => {
         nickname: data.nickname,
       });
 
-      console.log('회원가입 성공: ', newUser);
+      console.log('회원가입 성공');
+
+      navigate('/');
     } catch (error) {
       console.log('회원가입 실패: ', error);
     }
@@ -61,9 +63,7 @@ const Signup = () => {
 
   // firestore 닉네임 데이터 가져오기
   const inputNickname = watch('nickname');
-
   useEffect(() => {
-    // firestore 닉네임 데이터 가져오기
     const fetchUsersNickname = async (inputNickname: string) => {
       try {
         const usersCollection = collection(db, 'users');
@@ -98,7 +98,6 @@ const Signup = () => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     signupWithEmailandPassword(data);
-    navigate('/');
 
     console.log('data', data);
   };
