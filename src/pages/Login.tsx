@@ -1,12 +1,13 @@
 import styled from '@emotion/styled';
 import { ReactComponent as GoogleLogo } from '../assets/googleLogo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../config/firebase-config';
 
 const eye = <FontAwesomeIcon icon={faEye} />;
 const eyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -22,10 +23,8 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = useForm<LoginInputs>({ mode: 'onChange' });
-
-  const auth = getAuth();
 
   const navigate = useNavigate();
 
@@ -48,6 +47,17 @@ const Login = () => {
       console.log('Google 로그인 실패: ', error);
     }
   };
+
+  // 비밀번호 찾기
+  // const findPasswordHandler = async (data: LoginInputs) => {
+  //   try {
+  //     await sendPasswordResetEmail(auth, data.email);
+
+  //     alert('이메일이 전송되었습니다.');
+  //   } catch (error) {
+  //     console.log('error:', error);
+  //   }
+  // };
 
   // firebase authentication 로그인
   const signInWithEmailAndPasswordHandler = async (data: LoginInputs) => {
@@ -94,26 +104,20 @@ const Login = () => {
               <LoginFormBlock>
                 <Input
                   {...register('email', {
-                    required: '이메일을 다시 입력해주세요.',
-                    pattern: { value: EMAIL_REGEX, message: '올바른 이메일 형식으로 입력해주세요.' },
+                    required: true,
+                    pattern: EMAIL_REGEX,
                   })}
                   type="text"
                   placeholder="ex) abc123@naver.com"
                 />
                 <Label>이메일</Label>
-                {errors.email && (
-                  <ErrorMessage>
-                    <ErrorIcon icon={faCircleExclamation} />
-                    {errors.email.message}
-                  </ErrorMessage>
-                )}
               </LoginFormBlock>
               <LoginFormBlock>
                 <Input
                   {...register('password', {
-                    required: '비밀번호를 다시 입력해주세요.',
-                    minLength: { value: 8, message: '8자 이상의 알파벳, 숫자, 기호 조합으로 입력해주세요.' },
-                    pattern: { value: PASSWORD_REGEX, message: '영문, 숫자, 기호 조합으로 입력해주세요.' },
+                    required: true,
+                    minLength: 8,
+                    pattern: PASSWORD_REGEX,
                   })}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="8자 이상의 알파벳, 숫자, 기호 조합으로 입력해주세요."
@@ -121,13 +125,7 @@ const Login = () => {
                 />
                 <Label>비밀번호</Label>
                 <PasswordIcon onClick={togglePwVisibility}>{showPassword ? eye : eyeSlash}</PasswordIcon>
-                <FindPassword>비밀번호 찾기</FindPassword>
-                {errors.password && (
-                  <ErrorMessage>
-                    <ErrorIcon icon={faCircleExclamation} />
-                    {errors.password.message}
-                  </ErrorMessage>
-                )}
+                {/* <FindPassword>비밀번호 찾기</FindPassword> */}
               </LoginFormBlock>
 
               <LoginBtn type="submit" value="로그인" disabled={!isValid} />
@@ -301,26 +299,13 @@ const FindPassword = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: 10px;
-
+  margin-top: 15px;
   font-size: 14px;
   color: var(--logo-color);
 
   &:hover {
     cursor: pointer;
   }
-`;
-
-const ErrorIcon = styled(FontAwesomeIcon)`
-  margin-right: 5px;
-  font-size: 14px;
-  color: var(--red-color);
-`;
-
-const ErrorMessage = styled.div`
-  font-size: 14px;
-  color: var(--red-color);
-  margin-top: 10px;
 `;
 
 const LoginBtn = styled.input`
