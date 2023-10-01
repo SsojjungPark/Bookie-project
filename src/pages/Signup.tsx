@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +38,8 @@ const Signup = () => {
 
   const passwordRef = useRef<string | null>(null);
   passwordRef.current = watch('password');
+
+  const navigate = useNavigate();
 
   // firebase Auth 회원가입 연동
   const signupWithEmailandPassword = async (data: FormInputs) => {
@@ -96,6 +98,8 @@ const Signup = () => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     signupWithEmailandPassword(data);
+    navigate('/');
+
     console.log('data', data);
   };
 
