@@ -17,7 +17,11 @@ interface CurentUserDataType {
 }
 
 // AuthContext 생성
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  currentUser: null,
+  curentUserData: null,
+  loading: false,
+});
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
