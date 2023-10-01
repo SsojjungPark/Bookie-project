@@ -2,10 +2,11 @@ import styled from '@emotion/styled';
 import { ReactComponent as GoogleLogo } from '../assets/googleLogo.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, getAuth } from 'firebase/auth';
 
 const eye = <FontAwesomeIcon icon={faEye} />;
 const eyeSlash = <FontAwesomeIcon icon={faEyeSlash} />;
@@ -22,11 +23,52 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<LoginInputs>();
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => console.log('data', data);
+  } = useForm<LoginInputs>({ mode: 'onChange' });
+
+  const auth = getAuth();
+
+  const navigate = useNavigate();
 
   const togglePwVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  // Google 소셜 로그인
+  const loginWithGoogle = async () => {
+    try {
+      const googleAuthProvider = new GoogleAuthProvider();
+      // 사용자가 현재 구글 계정으로 로그인되어 있는 경우에도 다른 계정으로 로그인하도록 옵션 제공
+      googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
+      const result = await signInWithPopup(auth, googleAuthProvider);
+      const user = result.user;
+      console.log('Google 로그인 성공: ', user);
+
+      navigate('/');
+    } catch (error) {
+      console.log('Google 로그인 실패: ', error);
+    }
+  };
+
+  // firebase authentication 로그인
+  const signInWithEmailAndPasswordHandler = async (data: LoginInputs) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+
+      console.log('로그인 성공: ', userCredential.user);
+      navigate('/');
+    } catch (error) {
+      console.log('로그인 실패: ', error);
+
+      if (error) {
+        alert('올바른 이메일과 비밀번호를 입력해주세요.');
+      }
+    }
+  };
+
+  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
+    signInWithEmailAndPasswordHandler(data);
+
+    console.log('data', data);
   };
 
   return (
@@ -39,7 +81,7 @@ const Login = () => {
 
         <LoginOptionWrapper>
           <SocialLogin>
-            <GoogleLoginBtn type="button">
+            <GoogleLoginBtn onClick={loginWithGoogle} type="button">
               <GoogleLogoImg />
               <span>Google</span>로 로그인하기
             </GoogleLoginBtn>
@@ -79,6 +121,7 @@ const Login = () => {
                 />
                 <Label>비밀번호</Label>
                 <PasswordIcon onClick={togglePwVisibility}>{showPassword ? eye : eyeSlash}</PasswordIcon>
+                <FindPassword>비밀번호 찾기</FindPassword>
                 {errors.password && (
                   <ErrorMessage>
                     <ErrorIcon icon={faCircleExclamation} />
@@ -239,7 +282,7 @@ const Label = styled.label`
   left: 0;
   margin-bottom: 10px;
   font-size: 14px;
-  color: var(--logo-color);
+  color: var(--signup-input);
 `;
 
 const PasswordIcon = styled.i`
@@ -250,6 +293,20 @@ const PasswordIcon = styled.i`
   color: #4d4d4d;
 
   &: hover {
+    cursor: pointer;
+  }
+`;
+
+const FindPassword = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+
+  font-size: 14px;
+  color: var(--logo-color);
+
+  &:hover {
     cursor: pointer;
   }
 `;
@@ -291,18 +348,9 @@ const MoveToSignup = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 45px;
+  margin: 60px 0 15px 0;
   color: #575757;
-
-  span {
-    margin-left: 8px;
-    text-decoration: underline;
-  }
-
-  span: hover {
-    cursor: pointer;
-    font-weight: 500;
-  }
+  font-size: 15px;
 `;
 
 const MoveToSignupLink = styled(Link)`
@@ -312,5 +360,6 @@ const MoveToSignupLink = styled(Link)`
   &: hover {
     cursor: pointer;
     font-weight: 500;
+    color: var(--logo-color);
   }
 `;
