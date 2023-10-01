@@ -2,8 +2,24 @@ import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { signOut } from 'firebase/auth';
+import { auth } from '../config/firebase-config';
 
 const Header = () => {
+  const { currentUser } = useAuth();
+
+  // 로그아웃
+  const handleLogout = async () => {
+    try {
+      if (currentUser) {
+        await signOut(auth);
+      }
+    } catch (error) {
+      console.log('로그아웃 실패: ', error);
+    }
+  };
+
   return (
     <HeaderContainer>
       <HeaderWrapper>
@@ -33,11 +49,22 @@ const Header = () => {
             <InputSearch type="text" placeholder="검색어를 입력해주세요." />
             <SearchIcon icon={faMagnifyingGlass} />
           </SearchContaienr>
-
-          <GoToWrapper>
-            <LinkLogin to="/login">로그인</LinkLogin>
-            <LinkSingup to="/signup">회원가입</LinkSingup>
-          </GoToWrapper>
+          {currentUser ? (
+            <AfterLoginArea>
+              <ProfileImg
+                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                alt="프로필사진"
+                width="32px"
+                height="32px"
+              />
+              <Logout onClick={handleLogout}>로그아웃</Logout>
+            </AfterLoginArea>
+          ) : (
+            <GoToWrapper>
+              <LinkLogin to="/login">로그인</LinkLogin>
+              <LinkSingup to="/signup">회원가입</LinkSingup>
+            </GoToWrapper>
+          )}
         </HeaderRight>
       </HeaderWrapper>
     </HeaderContainer>
@@ -140,16 +167,8 @@ const SearchIcon = styled(FontAwesomeIcon)`
 `;
 
 const GoToWrapper = styled.div`
+  align-items: center;
   color: var(--black-color);
-
-  span {
-    font-size: 15px;
-  }
-
-  span: hover {
-    font-weight: 500;
-    cursor: pointer;
-  }
 `;
 
 const linkStyles = {
@@ -158,11 +177,34 @@ const linkStyles = {
   fontSize: '15px',
 
   '&:hover': {
-    fontWeight: '500',
     cursor: 'pointer',
+    fontWeight: '500',
   },
 };
 
 const LinkLogin = styled(Link)(linkStyles, { marginRight: '12px' });
 
 const LinkSingup = styled(Link)(linkStyles);
+
+const AfterLoginArea = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ProfileImg = styled.img`
+  border-radius: 50%;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const Logout = styled.div`
+  margin-left: 20px;
+  font-size: 15px;
+
+  &:hover {
+    cursor: pointer;
+    font-weight: 500;
+  }
+`;
