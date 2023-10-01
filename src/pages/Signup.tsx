@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ErrorMessage } from '@hookform/error-message';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { addDoc, collection } from 'firebase/firestore';
-import { db } from '../config/firebase-config';
+import { auth, db } from '../config/firebase-config';
 import { getDocs } from 'firebase/firestore';
 
 const eye = <FontAwesomeIcon icon={faEye} />;
@@ -44,7 +44,6 @@ const Signup = () => {
   // firebase Auth 회원가입 연동
   const signupWithEmailandPassword = async (data: FormInputs) => {
     try {
-      const auth = getAuth();
       const newUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
       const userInfo = await addDoc(collection(db, 'users'), {
