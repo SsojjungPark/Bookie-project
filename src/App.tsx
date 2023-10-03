@@ -3,7 +3,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Novel from './pages/Novel';
-// import ReviewPost from './pages/ReviewPost';
+import ReviewPost from './pages/ReviewPost';
 // import WriteReview from './pages/WirteReview';
 import { Routes, Route } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
       {<Route path="/novel" element={<Novel />} />}
-      {/*  <Route path="/reviewpost" element={<ReviewPost />} /> */}
+      <Route path="/:category/:id" element={<ReviewPost />} />
 
       {/* <WriteReview /> */}
     </Routes>
