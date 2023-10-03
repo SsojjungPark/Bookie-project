@@ -38,9 +38,6 @@ const Header = () => {
             <Category>
               <StyledLink to="/selfImprovement">자기계발</StyledLink>
             </Category>
-            <Category>
-              <StyledLink to="/economicSociety">경제/사회</StyledLink>
-            </Category>
           </CategoriesUl>
         </Nav>
 
@@ -110,7 +107,7 @@ const Nav = styled.nav`
 `;
 
 const CategoriesUl = styled.ul`
-  width: 350px;
+  width: 250px;
   display: flex;
   justify-content: space-between;
   font-weight: 500;
