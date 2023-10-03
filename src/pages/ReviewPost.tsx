@@ -2,13 +2,52 @@ import styled from '@emotion/styled';
 import Header from '../components/Header';
 import Comment from '../components/Comment';
 import Footer from '../components/Footer';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faHeart, faCommentDots } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fullStar } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { doc, collection, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase-config';
+
+interface ReviewDatasType {
+  bookImg: string;
+  bookTitle: string;
+  bookWriter: string;
+  reviewTitle: string;
+  nickname: string;
+  createdAt: string;
+  content: string;
+  likes: number;
+}
 
 const ReviewPost = () => {
+  const [review, setReview] = useState<ReviewDatasType | null>(null);
+  const { id: reviewId } = useParams();
+
+  useEffect(() => {
+    const fetchReviewData = async () => {
+      try {
+        const docRef = doc(collection(db, 'boards'), reviewId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const reviewData = docSnap.data() as ReviewDatasType;
+          setReview(reviewData);
+
+          console.log('reviewData가 있습니다.');
+        } else {
+          console.log('reviewData가 없습니다.');
+        }
+      } catch (error) {
+        console.log('fetchReviewData 실패: ', error);
+      }
+    };
+
+    fetchReviewData();
+  }, []);
+
   return (
     <>
       <Header />
@@ -17,25 +56,17 @@ const ReviewPost = () => {
         <ReviewCommentWrapper>
           <ReviewContainer>
             <BookArea>
-              <BookImage
-                src="https://contents.kyobobook.co.kr/sih/fit-in/300x0/pdt/9788958075226.jpg"
-                alt="책 제목"
-                width="180px"
-                height="270px"
-              />
+              <BookImage src={review?.bookImg} alt="책 제목" />
 
               <BookInfo>
-                <BookTitle>책 제목</BookTitle>
-                <WriterPublisherWrapper>
-                  <BookWriter>저자</BookWriter>
-                  <Publisher>출판사</Publisher>
-                </WriterPublisherWrapper>
+                <BookTitle>{review?.bookTitle}</BookTitle>
+                <BookWriter>{review?.bookWriter}</BookWriter>
               </BookInfo>
             </BookArea>
 
             <ReviewArea>
               <ReviewTitleWrapper>
-                <ReviewTitle>리뷰 제목</ReviewTitle>
+                <ReviewTitle>{review?.reviewTitle}</ReviewTitle>
                 <BookmarkIcon icon={faStar} />
                 <BookmarkedIcon icon={fullStar} />
               </ReviewTitleWrapper>
@@ -46,11 +77,11 @@ const ReviewPost = () => {
                   width="40px"
                   height="40px"
                 />
-                <Nickname>닉네임</Nickname>
-                <Date>작성일</Date>
+                <Nickname>{review?.nickname}</Nickname>
+                <Date>{review?.createdAt}</Date>
               </UserInfo>
 
-              <ReviewContent>리뷰 내용</ReviewContent>
+              <ReviewContent>{review?.content}</ReviewContent>
             </ReviewArea>
           </ReviewContainer>
 
@@ -59,7 +90,7 @@ const ReviewPost = () => {
               <LikeIcon icon={faHeart} />
               <LikedIcon icon={fullHeart} />
               좋아요
-              <span>0</span>
+              <span>{review?.likes}</span>
             </LikeArea>
             <CommentArea>
               <CommentIcon icon={faCommentDots} />
@@ -82,7 +113,6 @@ export default ReviewPost;
 const ReviewPostContainer = styled.div`
   width: 1200px;
   margin: 0 auto;
-  border: 1px solid blue;
 `;
 
 const ReviewCommentWrapper = styled.div`
@@ -100,6 +130,8 @@ const BookArea = styled.div`
 `;
 
 const BookImage = styled.img`
+  width: 180px;
+  height: 270px;
   object-fit: cover;
 `;
 
@@ -108,26 +140,19 @@ const BookInfo = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 18px;
+  margin-top: 25px;
 `;
 
 const BookTitle = styled.div`
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-weight: 500;
-  font-size: 16px;
-`;
-
-const WriterPublisherWrapper = styled.div`
-  display: flex;
-  font-size: 14px;
-  color: var(--dark-gray);
+  font-size: 15px;
 `;
 
 const BookWriter = styled.div`
-  margin-right: 5px;
+  font-size: 13px;
+  color: var(--dark-gray);
 `;
-
-const Publisher = styled.div``;
 
 const ReviewArea = styled.div`
   width: 100%;
@@ -136,13 +161,13 @@ const ReviewArea = styled.div`
 const ReviewTitleWrapper = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 50px;
   padding-left: 15px;
 `;
 
 const ReviewTitle = styled.div`
   font-weight: 700;
-  font-size: 20px;
+  font-size: 22px;
   margin-right: 25px;
 `;
 
@@ -174,6 +199,8 @@ const UserInfo = styled.div`
 `;
 
 const ProfileImg = styled.img`
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 1px solid var(--singup-input);
   object-fit: cover;
@@ -190,6 +217,7 @@ const ReviewContent = styled.div`
   min-height: 300px;
   padding: 25px 15px 15px;
   font-size: 15px;
+  line-height: 30px;
 `;
 
 const LikeCommentWrapper = styled.div`
