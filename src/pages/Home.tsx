@@ -1,8 +1,8 @@
 import styled from '@emotion/styled';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import AutoCarousel from '../components/Home/AutoCarousel';
-import BestReviewCarousel from '../components/Home/BestReview';
+import AutoCarousel from '../components/home/AutoCarousel';
+import BestReviewCarousel from '../components/home/BestReview';
 
 const Home = () => {
   return (
