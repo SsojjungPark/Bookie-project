@@ -49,6 +49,7 @@ const Signup = () => {
       const userInfo = await addDoc(collection(db, 'users'), {
         uid: newUser.user.uid,
         name: data.name,
+        email: data.email,
         nickname: data.nickname,
       });
 
