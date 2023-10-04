@@ -27,7 +27,7 @@ const Novel = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const reviewSnapshot = await getDocs(collection(db, 'boards'));
+        const reviewSnapshot = await getDocs(collection(db, 'novel'));
         const reviewData = reviewSnapshot.docs.map((doc) => {
           const data = doc.data();
 
