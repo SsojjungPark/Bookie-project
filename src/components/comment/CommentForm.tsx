@@ -12,6 +12,7 @@ const CommentForm = () => {
 
   const [commentContent, setCommentContent] = useState<string>('');
   const [commentNickname, setCommentNickname] = useState<string>('');
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -31,6 +32,7 @@ const CommentForm = () => {
           const currentUserNickname = querySnaptshot.docs[0].data().nickname;
 
           setCommentNickname(currentUserNickname);
+          setIsUserLoggedIn(true);
         } catch (error) {
           console.log('fetchUserNickname 실패: ', error);
         }
@@ -43,25 +45,32 @@ const CommentForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // 날짜 "0000-00-00"형태로 변경
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}`;
+    // 로그인한 경우에만 댓글 저장
+    if (isUserLoggedIn) {
+      // 날짜 "0000-00-00"형태로 변경
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+      const day = currentDate.getDate().toString().padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`;
 
-    // 댓글 저장
-    try {
-      const commentRef = doc(collection(db, `${category}`, `${reviewId}`, 'comments'));
-      await setDoc(commentRef, {
-        comment: commentContent,
-        commentDate: formattedDate,
-        commentWriter: commentNickname,
-      });
+      // 댓글 저장
+      try {
+        const commentRef = doc(collection(db, `${category}`, `${reviewId}`, 'comments'));
+        await setDoc(commentRef, {
+          comment: commentContent,
+          commentDate: formattedDate,
+          commentWriter: commentNickname,
+          uid: currentUser?.uid,
+        });
 
-      console.log('댓글 저장 성공');
-    } catch (error) {
-      console.log('댓글 저장 실패: ', error);
+        setCommentContent(''); // 등록후 댓글창 초기화
+        console.log('댓글 저장 성공');
+      } catch (error) {
+        console.log('댓글 저장 실패: ', error);
+      }
+    } else {
+      alert('댓글 작성을 위해서는 로그인이 필요합니다.');
     }
   };
 
