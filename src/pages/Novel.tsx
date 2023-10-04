@@ -48,7 +48,6 @@ const Novel = () => {
         reviewData.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
         setReviews(reviewData);
-        console.log('reviewData fetch 성공');
       } catch (error) {
         console.log('reviewData fetch 실패: ', error);
       }
