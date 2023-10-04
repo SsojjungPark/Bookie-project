@@ -4,13 +4,15 @@ import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { db } from '../../config/firebase-config';
 
 interface CommentData {
   commentNickname: string;
   commentDate: string;
   commentContent: string;
+  writerUid: string;
+  commentId: string;
 }
 
 interface CommentCountProps {
@@ -23,38 +25,48 @@ const CommentList: React.FC<CommentCountProps> = ({ onCommentCountChange }) => {
   const { id: reviewId } = useParams();
 
   const [comments, setComments] = useState<CommentData[]>([]);
+  const [visibleCommentId, setVisibleCommentId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const q = query(collection(db, `${category}`, `${reviewId}`, 'comments'));
-        const querySnapshot = await getDocs(q);
-        const CommentData = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
+    const commentsCollection = query(collection(db, `${category}`, `${reviewId}`, 'comments'));
+    const unsubscribe = onSnapshot(commentsCollection, (querySnapshot) => {
+      const CommentData = querySnapshot.docs.map((doc) => {
+        const data = doc.data();
 
-          return {
-            commentNickname: data.commentWriter,
-            commentDate: data.commentDate,
-            commentContent: data.comment,
-          };
-        });
+        return {
+          commentNickname: data.commentWriter,
+          commentDate: data.commentDate,
+          commentContent: data.comment,
+          writerUid: data.uid,
+          commentId: doc.id,
+        };
+      });
 
-        setComments(CommentData);
+      setComments(CommentData);
 
-        const commentCount = CommentData.length;
-        onCommentCountChange(commentCount);
-      } catch (error) {
-        console.log('fetchComments 실패: ', error);
+      const commentCount = CommentData.length;
+      onCommentCountChange(commentCount);
+    });
+
+    return () => unsubscribe();
+  }, [category, reviewId, onCommentCountChange]);
+
+  const toggleCommentToolBtn = (commentId: string) => {
+    const commentToToggle = comments.find((comment) => comment.commentId === commentId);
+
+    if (currentUser && commentToToggle && currentUser.uid === commentToToggle.writerUid) {
+      if (visibleCommentId === commentId) {
+        setVisibleCommentId(null);
+      } else {
+        setVisibleCommentId(commentId);
       }
-    };
-
-    fetchComments();
-  }, [onCommentCountChange]);
+    }
+  };
 
   return (
     <CommentRowUl>
-      {comments.map((comment, index) => (
-        <CommentLi key={index + 1}>
+      {comments.map((comment) => (
+        <CommentLi key={comment.commentId}>
           <CommentInfo>
             <UserInfo>
               <ProfilePhoto
@@ -66,15 +78,19 @@ const CommentList: React.FC<CommentCountProps> = ({ onCommentCountChange }) => {
               <Nickname>{comment.commentNickname}</Nickname>
               <Date>{comment.commentDate}</Date>
             </UserInfo>
-            <BtnsContainer>
-              <DotsIconWrapper>
-                <DotsIcon icon={faEllipsisVertical} />
-              </DotsIconWrapper>
-              <BtnsWrapperUl>
-                <EditBtn>수정</EditBtn>
-                <DeleteBtn>삭제</DeleteBtn>
-              </BtnsWrapperUl>
-            </BtnsContainer>
+            {currentUser && currentUser.uid === comment.writerUid && (
+              <BtnsContainer>
+                <DotsIconWrapper onClick={() => toggleCommentToolBtn(comment.commentId)}>
+                  <DotsIcon icon={faEllipsisVertical} />
+                </DotsIconWrapper>
+                {visibleCommentId === comment.commentId && (
+                  <BtnsWrapperUl>
+                    <EditBtn>수정</EditBtn>
+                    <DeleteBtn>삭제</DeleteBtn>
+                  </BtnsWrapperUl>
+                )}
+              </BtnsContainer>
+            )}
           </CommentInfo>
           <CommentText>{comment.commentContent}</CommentText>
         </CommentLi>
@@ -148,7 +164,6 @@ const BtnsWrapperUl = styled.ul`
   border-radius: var(--border-radius);
   background-color: var(--white-color);
   box-shadow: 0 1px 12px 0 rgba(0, 0, 0, 0.09);
-  display: none;
 
   li {
     display: flex;
