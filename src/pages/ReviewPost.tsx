@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import Header from '../components/Header';
-import Comment from '../components/Comment';
+import Comment from '../components/comment/Comment';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faHeart, faCommentDots } from '@fortawesome/free-regular-svg-icons';
@@ -10,6 +10,8 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { doc, collection, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
+import CommentForm from '../components/comment/CommentForm';
+import CommentList from '../components/comment/CommentList';
 
 interface ReviewDatasType {
   bookImg: string;
@@ -25,20 +27,23 @@ interface ReviewDatasType {
 const ReviewPost = () => {
   const [review, setReview] = useState<ReviewDatasType | null>(null);
   const { id: reviewId } = useParams();
+  const { category } = useParams();
+
+  const [commentCount, setCommentCount] = useState<number>(0);
+
+  const handleCommentCountChange = (count: number) => {
+    setCommentCount(count);
+  };
 
   useEffect(() => {
     const fetchReviewData = async () => {
       try {
-        const docRef = doc(collection(db, 'boards'), reviewId);
+        const docRef = doc(collection(db, `${category}`), reviewId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const reviewData = docSnap.data() as ReviewDatasType;
           setReview(reviewData);
-
-          console.log('reviewData가 있습니다.');
-        } else {
-          console.log('reviewData가 없습니다.');
         }
       } catch (error) {
         console.log('fetchReviewData 실패: ', error);
@@ -95,11 +100,14 @@ const ReviewPost = () => {
             <CommentArea>
               <CommentIcon icon={faCommentDots} />
               댓글
-              <span>0</span>
+              <span>{commentCount}</span>
             </CommentArea>
           </LikeCommentWrapper>
 
-          <Comment />
+          <Comment>
+            <CommentForm />
+            <CommentList onCommentCountChange={handleCommentCountChange} />
+          </Comment>
         </ReviewCommentWrapper>
       </ReviewPostContainer>
 
@@ -162,7 +170,7 @@ const ReviewTitleWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 50px;
-  padding-left: 15px;
+  padding-left: 20px;
 `;
 
 const ReviewTitle = styled.div`
@@ -193,7 +201,7 @@ const UserInfo = styled.div`
   display: flex;
   align-items: center;
   font-size: 14px;
-  padding-left: 15px;
+  padding-left: 20px;
   padding-bottom: 25px;
   border-bottom: 1px solid #d9d9d9;
 `;
@@ -215,9 +223,9 @@ const Date = styled.div``;
 
 const ReviewContent = styled.div`
   min-height: 300px;
-  padding: 25px 15px 15px;
+  padding: 25px 20px 15px;
   font-size: 15px;
-  line-height: 30px;
+  line-height: 35px;
 `;
 
 const LikeCommentWrapper = styled.div`

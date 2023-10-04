@@ -1,19 +1,60 @@
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../../context/AuthContext';
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { db } from '../../config/firebase-config';
 
-const Comment = () => {
+interface CommentData {
+  commentNickname: string;
+  commentDate: string;
+  commentContent: string;
+}
+
+interface CommentCountProps {
+  onCommentCountChange: (count: number) => void;
+}
+
+const CommentList: React.FC<CommentCountProps> = ({ onCommentCountChange }) => {
+  const { currentUser } = useAuth();
+  const { category } = useParams();
+  const { id: reviewId } = useParams();
+
+  const [comments, setComments] = useState<CommentData[]>([]);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const q = query(collection(db, `${category}`, `${reviewId}`, 'comments'));
+        const querySnapshot = await getDocs(q);
+        const CommentData = querySnapshot.docs.map((doc) => {
+          const data = doc.data();
+
+          return {
+            commentNickname: data.commentWriter,
+            commentDate: data.commentDate,
+            commentContent: data.comment,
+          };
+        });
+
+        setComments(CommentData);
+
+        const commentCount = CommentData.length;
+        onCommentCountChange(commentCount);
+      } catch (error) {
+        console.log('fetchComments 실패: ', error);
+      }
+    };
+
+    fetchComments();
+  }, [onCommentCountChange]);
+
   return (
-    <CommentContainer>
-      <CommentConTitle>댓글</CommentConTitle>
-
-      <CommentForm>
-        <CommentBox placeholder="댓글을 입력해주세요." spellCheck="false" />
-        <RegisterBtn type="submit" value="등록" />
-      </CommentForm>
-
-      <CommentListsUl>
-        <CommentLi>
+    <CommentRowUl>
+      {comments.map((comment, index) => (
+        <CommentLi key={index + 1}>
           <CommentInfo>
             <UserInfo>
               <ProfilePhoto
@@ -22,8 +63,8 @@ const Comment = () => {
                 width="36px"
                 height="36px"
               />
-              <Nickname>닉네임</Nickname>
-              <Date>작성일</Date>
+              <Nickname>{comment.commentNickname}</Nickname>
+              <Date>{comment.commentDate}</Date>
             </UserInfo>
             <BtnsContainer>
               <DotsIconWrapper>
@@ -35,69 +76,16 @@ const Comment = () => {
               </BtnsWrapperUl>
             </BtnsContainer>
           </CommentInfo>
-          <CommentText>댓글 내용</CommentText>
+          <CommentText>{comment.commentContent}</CommentText>
         </CommentLi>
-      </CommentListsUl>
-    </CommentContainer>
+      ))}
+    </CommentRowUl>
   );
 };
 
-export default Comment;
+export default CommentList;
 
-const CommentContainer = styled.div`
-  width: 1200px;
-  margin-top: 30px;
-`;
-
-const CommentConTitle = styled.div`
-  font-weight: 600;
-  font-size: 18px;
-  margin-bottom: 22px;
-`;
-
-const CommentForm = styled.form`
-  display: flex;
-  justify-content: space-between;
-`;
-
-const CommentBox = styled.textarea`
-  width: 90%;
-  height: 55px;
-  padding: 10px;
-  outline: none;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--signup-input);
-  resize: none;
-  font-size: 13px;
-  line-height: 20px;
-  color: var(--black-color);
-
-  &:focus {
-    border: 2px solid var(--signup-input);
-  }
-
-  &::placeholder {
-    font-size: 14px;
-    letter-spacing: -2px;
-    color: var(--placehodler-gray);
-  }
-`;
-
-const RegisterBtn = styled.input`
-  width: 74px;
-  background-color: var(--light-brown);
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--white-color);
-  border: none;
-  border-radius: var(--border-radius);
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const CommentListsUl = styled.ul`
+const CommentRowUl = styled.ul`
   width: 100%;
 `;
 
@@ -128,6 +116,7 @@ const ProfilePhoto = styled.img`
 
 const Nickname = styled.span`
   margin-right: 10px;
+  font-weight: 500;
 `;
 
 const Date = styled.span``;
