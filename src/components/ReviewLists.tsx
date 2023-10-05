@@ -1,16 +1,12 @@
 import styled from '@emotion/styled';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
-import { Link } from 'react-router-dom';
 
 interface ReviewPostInfo {
-  reviewId: string;
+  id: string;
   bookImg: string;
   bookTitle: string;
   bookWriter: string;
@@ -21,18 +17,18 @@ interface ReviewPostInfo {
   category: string;
 }
 
-const Novel = () => {
+const ReviewList = () => {
   const [reviews, setReviews] = useState<ReviewPostInfo[]>([]);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const reviewSnapshot = await getDocs(collection(db, 'novel'));
+        const reviewSnapshot = await getDocs(collection(db, 'boards'));
         const reviewData = reviewSnapshot.docs.map((doc) => {
           const data = doc.data();
 
           return {
-            reviewId: doc.id,
+            id: doc.id,
             bookImg: data.bookImg,
             bookTitle: data.bookTitle,
             bookWriter: data.bookWriter,
@@ -48,6 +44,7 @@ const Novel = () => {
         reviewData.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
         setReviews(reviewData);
+        console.log('reviewData fetch 성공');
       } catch (error) {
         console.log('reviewData fetch 실패: ', error);
       }
@@ -57,68 +54,39 @@ const Novel = () => {
   }, []);
 
   return (
-    <ReviewContainer>
-      <Header />
+    <ReviewItemsUl>
+      {reviews.map((review, index) => (
+        <ReviewItemLi key={review.id}>
+          <ReviewNumber>{index + 1}</ReviewNumber>
 
-      <ReviewWrapper>
-        <Title>소설</Title>
-        <ReviewItemsUl>
-          {reviews.map((review, index) => (
-            <ReviewItemLi key={review.reviewId}>
-              <ReviewNumber>{index + 1}</ReviewNumber>
+          <BookImage src={review.bookImg} alt={review.bookTitle} />
 
-              <BookImage src={review.bookImg} alt={review.bookTitle} />
+          <ReviewItemInfo>
+            <BookInfo>
+              <BookTitle>{review.bookTitle}</BookTitle>
+              <BookWriter>({review.bookWriter})</BookWriter>
+            </BookInfo>
 
-              <ReviewItemInfo>
-                <BookInfo>
-                  <BookTitle>{review.bookTitle}</BookTitle>
-                  <BookWriter>({review.bookWriter})</BookWriter>
-                </BookInfo>
+            <ReviewInfo>
+              <ReviewTitle>{review.reviewTitle}</ReviewTitle>
+              <NicknameDateWrapper>
+                <Nickname>{review.nickname}</Nickname>
+                <Date>{review.createdAt}</Date>
+              </NicknameDateWrapper>
+            </ReviewInfo>
 
-                <ReviewInfo>
-                  <ReviewTitleLink to={`/${review.category}/${review.reviewId}`}>{review.reviewTitle}</ReviewTitleLink>
-                  <NicknameDateWrapper>
-                    <Nickname>{review.nickname}</Nickname>
-                    <Date>{review.createdAt}</Date>
-                  </NicknameDateWrapper>
-                </ReviewInfo>
-
-                <LikeArea>
-                  <LikeIcon icon={fullHeart} />
-                  <LikesNumber>{review.likes}</LikesNumber>
-                </LikeArea>
-              </ReviewItemInfo>
-            </ReviewItemLi>
-          ))}
-        </ReviewItemsUl>
-
-        <WriteBtn type="button">
-          <WriteIcon icon={faPen} />
-          글쓰기
-        </WriteBtn>
-      </ReviewWrapper>
-
-      <Footer />
-    </ReviewContainer>
+            <LikeArea>
+              <LikeIcon icon={fullHeart} />
+              <LikesNumber>{review.likes}</LikesNumber>
+            </LikeArea>
+          </ReviewItemInfo>
+        </ReviewItemLi>
+      ))}
+    </ReviewItemsUl>
   );
 };
 
-export default Novel;
-
-const ReviewContainer = styled.div`
-  background-color: var(--white-color;);x
-`;
-
-const ReviewWrapper = styled.div`
-  width: 1200px;
-  margin: 0 auto;
-`;
-
-const Title = styled.h2`
-  font-weight: 700;
-  font-size: 27px;
-  margin: 100px 0 50px 0;
-`;
+export default ReviewList;
 
 const ReviewItemsUl = styled.ul`
   width: 100%;
@@ -169,13 +137,10 @@ const BookWriter = styled.div``;
 
 const ReviewInfo = styled.div``;
 
-const ReviewTitleLink = styled(Link)`
-  display: block;
-  text-decoration: none;
+const ReviewTitle = styled.div`
   font-weight: 700;
   font-size: 20px;
-  color: var(--black-color);
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 
   &: hover {
     cursor: pointer;
@@ -211,24 +176,4 @@ const LikeIcon = styled(FontAwesomeIcon)`
 const LikesNumber = styled.span`
   margin-left: 5px;
   font-size: 15px;
-`;
-
-const WriteBtn = styled.button`
-  float: right;
-  margin-top: 40px;
-  width: 85px;
-  height: 38px;
-  font-size: 14px;
-  background-color: #f5f5f5;
-  border: 1px solid var(--signup-input);
-  border-radius: var(--border-radius);
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const WriteIcon = styled(FontAwesomeIcon)`
-  font-size: 14px;
-  margin-right: 5px;
 `;
