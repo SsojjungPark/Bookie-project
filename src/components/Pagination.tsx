@@ -1,14 +1,13 @@
 import styled from '@emotion/styled';
-import { useState } from 'react';
 import Pagination from 'react-js-pagination';
 
-const Paging = (page, count, setPages) => {
-  const [page, setPage] = useState<number>(1);
+interface PagingProps {
+  page: number;
+  count: number;
+  handlePageChange: () => void;
+}
 
-  const handlePageChange = (page: number) => {
-    setPage(page);
-  };
-
+const Paging = ({ page, count, handlePageChange }: PagingProps) => {
   return (
     <>
       <Pagination

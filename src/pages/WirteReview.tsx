@@ -8,6 +8,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../context/AuthContext';
+import QuillEditor from '../components/review/QuillEditor';
 
 interface Inputs {
   bookTitle: string;
@@ -119,6 +120,7 @@ const WriteReview = () => {
               placeholder="리뷰 제목을 입력해주세요."
               spellCheck="false"
             />
+            <QuillEditor />
 
             <ButtonsArea>
               <RegisterBtn type="submit">등록</RegisterBtn>

@@ -7,7 +7,10 @@ import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+// import Paging from '../components/Pagination';
+// import Pagination from 'react-js-pagination';
 
 interface ReviewPostInfo {
   reviewId: string;
@@ -22,7 +25,21 @@ interface ReviewPostInfo {
 }
 
 const Novel = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
   const [reviews, setReviews] = useState<ReviewPostInfo[]>([]);
+
+  // 페이지네이션 부분
+  const [currentPage, setCurentPage] = useState<number>(1);
+
+  const count = reviews.length;
+  const reviewPerPage = 5;
+  const indexOfLastReview = currentPage * reviewPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewPerPage;
+  const handlePageChange = (pageNumber: number) => {
+    setCurentPage(pageNumber);
+  };
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -55,6 +72,14 @@ const Novel = () => {
 
     fetchReviews();
   }, []);
+
+  const handleWriteBtnClick = () => {
+    if (currentUser) {
+      navigate('/writeReview');
+    } else {
+      alert('리뷰를 작성하려면 로그인이 필요합니다.');
+    }
+  };
 
   return (
     <ReviewContainer>
@@ -92,10 +117,19 @@ const Novel = () => {
           ))}
         </ReviewItemsUl>
 
-        <WriteBtn type="button">
+        {/* <Paging count={count} page={page} handlePageChange={() => handlePageChange} />*/}
+        {/* <Pagination
+          activePage={currentPage} // 현재 페이지
+          itemsCountPerPage={5} // 한 페이지랑 보여줄 아이템 갯수
+          totalItemsCount={count} // 총 아이템 갯수
+          pageRangeDisplayed={5} // paginator의 페이지 범위
+          onChange={handlePageChange} // 페이지 변경을 핸들링하는 함수
+        /> */}
+
+        <WriteBtnLink to="/writeReview" onClick={handleWriteBtnClick}>
           <WriteIcon icon={faPen} />
           글쓰기
-        </WriteBtn>
+        </WriteBtnLink>
       </ReviewWrapper>
 
       <Footer />
@@ -213,7 +247,12 @@ const LikesNumber = styled.span`
   font-size: 15px;
 `;
 
-const WriteBtn = styled.button`
+const WriteBtnLink = styled(Link)`
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   float: right;
   margin-top: 40px;
   width: 85px;
@@ -222,6 +261,7 @@ const WriteBtn = styled.button`
   background-color: #f5f5f5;
   border: 1px solid var(--signup-input);
   border-radius: var(--border-radius);
+  color: var(--black-color);
 
   &:hover {
     cursor: pointer;
