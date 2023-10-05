@@ -86,7 +86,7 @@ const ReviewPost = () => {
                 <Date>{review?.createdAt}</Date>
               </UserInfo>
 
-              <ReviewContent>{review?.content}</ReviewContent>
+              <ReviewContent dangerouslySetInnerHTML={{ __html: review?.content || '' }} />
             </ReviewArea>
           </ReviewContainer>
 
