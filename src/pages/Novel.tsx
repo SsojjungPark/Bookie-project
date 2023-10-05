@@ -7,7 +7,8 @@ import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface ReviewPostInfo {
   reviewId: string;
@@ -22,6 +23,9 @@ interface ReviewPostInfo {
 }
 
 const Novel = () => {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
   const [reviews, setReviews] = useState<ReviewPostInfo[]>([]);
 
   useEffect(() => {
@@ -55,6 +59,14 @@ const Novel = () => {
 
     fetchReviews();
   }, []);
+
+  const handleWriteBtnClick = () => {
+    if (currentUser) {
+      navigate('/writeReview');
+    } else {
+      alert('리뷰를 작성하려면 로그인이 필요합니다.');
+    }
+  };
 
   return (
     <ReviewContainer>
@@ -92,10 +104,10 @@ const Novel = () => {
           ))}
         </ReviewItemsUl>
 
-        <WriteBtn type="button">
+        <WriteBtnLink to="/writeReview" onClick={handleWriteBtnClick}>
           <WriteIcon icon={faPen} />
           글쓰기
-        </WriteBtn>
+        </WriteBtnLink>
       </ReviewWrapper>
 
       <Footer />
@@ -213,7 +225,12 @@ const LikesNumber = styled.span`
   font-size: 15px;
 `;
 
-const WriteBtn = styled.button`
+const WriteBtnLink = styled(Link)`
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   float: right;
   margin-top: 40px;
   width: 85px;
@@ -222,6 +239,7 @@ const WriteBtn = styled.button`
   background-color: #f5f5f5;
   border: 1px solid var(--signup-input);
   border-radius: var(--border-radius);
+  color: var(--blacl-color);
 
   &:hover {
     cursor: pointer;
