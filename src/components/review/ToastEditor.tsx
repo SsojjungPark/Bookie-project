@@ -1,5 +1,6 @@
-import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import '@toast-ui/editor/dist/i18n/ko-kr';
 import { useRef } from 'react';
 
 interface ToastEditorProps {
@@ -11,7 +12,7 @@ const ToastEditor = ({ onContentChange }: ToastEditorProps) => {
 
   // Editor 내용 변경 시 호출되는 콜백 함수
   const handleContentChange = () => {
-    const value = editorRef.current?.getInstance().getMarkdown();
+    const value = editorRef.current?.getInstance().getHTML();
     onContentChange(value); // WriteReview로 전달
   };
 
@@ -37,6 +38,7 @@ const ToastEditor = ({ onContentChange }: ToastEditorProps) => {
         hideModeSwitch={true}
         toobarItems={toolbarItems}
         useCommandShortcut={false}
+        language="ko-KR"
         onChange={handleContentChange}
       />
     </>
