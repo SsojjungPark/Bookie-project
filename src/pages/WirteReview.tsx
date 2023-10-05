@@ -3,11 +3,12 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../context/AuthContext';
+import QuillEditor from '../components/review/QuillEditor';
 
 interface Inputs {
   bookTitle: string;
@@ -37,6 +38,11 @@ const WriteReview = () => {
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     setCategoryVisible(!categoryVisible);
+  };
+
+  // QuillEditor 컴포넌트에서 내용을 받아올 함수
+  const handleEditorChange = (value: string) => {
+    setReviewContent(value);
   };
 
   // 등록 버튼 함수
@@ -119,6 +125,7 @@ const WriteReview = () => {
               placeholder="리뷰 제목을 입력해주세요."
               spellCheck="false"
             />
+            <QuillEditor editorOnChange={handleEditorChange} />
 
             <ButtonsArea>
               <RegisterBtn type="submit">등록</RegisterBtn>
