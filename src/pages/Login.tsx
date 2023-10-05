@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../regex';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase-config';
 
 const eye = <FontAwesomeIcon icon={faEye} />;
@@ -47,17 +47,6 @@ const Login = () => {
       console.log('Google 로그인 실패: ', error);
     }
   };
-
-  // 비밀번호 찾기
-  // const findPasswordHandler = async (data: LoginInputs) => {
-  //   try {
-  //     await sendPasswordResetEmail(auth, data.email);
-
-  //     alert('이메일이 전송되었습니다.');
-  //   } catch (error) {
-  //     console.log('error:', error);
-  //   }
-  // };
 
   // firebase authentication 로그인
   const signInWithEmailAndPasswordHandler = async (data: LoginInputs) => {
@@ -125,7 +114,6 @@ const Login = () => {
                 />
                 <Label>비밀번호</Label>
                 <PasswordIcon onClick={togglePwVisibility}>{showPassword ? eye : eyeSlash}</PasswordIcon>
-                {/* <FindPassword>비밀번호 찾기</FindPassword> */}
               </LoginFormBlock>
 
               <LoginBtn type="submit" value="로그인" disabled={!isValid} />
@@ -291,19 +279,6 @@ const PasswordIcon = styled.i`
   color: #4d4d4d;
 
   &: hover {
-    cursor: pointer;
-  }
-`;
-
-const FindPassword = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 15px;
-  font-size: 14px;
-  color: var(--logo-color);
-
-  &:hover {
     cursor: pointer;
   }
 `;
