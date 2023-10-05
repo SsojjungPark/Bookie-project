@@ -3,31 +3,39 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { useAuth } from '../context/AuthContext';
 import QuillEditor from '../components/review/QuillEditor';
+import { useNavigate } from 'react-router-dom';
 
 interface Inputs {
+  bookImg: string;
   bookTitle: string;
   bookWriter: string;
   reviewTitle: string;
   content: string;
   createdAt: string;
   category: string;
-  bookImg: string;
+  nickname: string;
+  likes: number;
+  uid: string;
 }
 
 const WriteReview = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   const [categoryVisible, setCategoryVisible] = useState<boolean>(false);
   const [reviewContent, setReviewContent] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
-  const { register, handleSubmit } = useForm({ mode: 'onChange', criteriaMode: 'all' });
+  const [reviewNickname, setReviewNickname] = useState<string>('');
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState<boolean>(false);
+
+  const { register, handleSubmit } = useForm<Inputs>({ mode: 'onChange', criteriaMode: 'all' });
 
   // 카테고리 토글
   const handleCategoryToggle = () => {
@@ -45,40 +53,69 @@ const WriteReview = () => {
     setReviewContent(value);
   };
 
+  // 닉네임 불러오기
+  useEffect(() => {
+    const fetchUserNickname = async () => {
+      if (currentUser) {
+        try {
+          const usersCollection = collection(db, 'users');
+          const q = query(usersCollection, where('uid', '==', currentUser.uid));
+          const querySnaptshot = await getDocs(q);
+
+          const currentUserNickname = querySnaptshot.docs[0].data().nickname;
+
+          setReviewNickname(currentUserNickname);
+          setIsUserLoggedIn(true);
+
+          console.log('닉네임 성공', currentUserNickname);
+        } catch (error) {
+          console.log('fetchUserNickname 실패: ', error);
+        }
+      }
+    };
+
+    fetchUserNickname();
+  }, [currentUser]);
+
   // 등록 버튼 함수
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    try {
-      // 카테고리 영어로 변경
-      const categoryMap: Record<string, string> = {
-        소설: 'novel',
-        인문: 'humanities',
-        자기계발: 'sefImprovement',
-      };
-      const categoryInEnglish = categoryMap[selectedCategory];
+    if (isUserLoggedIn) {
+      try {
+        // 카테고리 영어로 변경
+        const categoryMap: Record<string, string> = {
+          소설: 'novel',
+          인문: 'humanities',
+          자기계발: 'sefImprovement',
+        };
+        const categoryInEnglish = categoryMap[selectedCategory];
 
-      // 날짜
-      const currentDate = new Date();
-      const year = currentDate.getFullYear();
-      const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-      const day = currentDate.getDate().toString().padStart(2, '0');
-      const formattedDate = `${year}-${month}-${day}`;
+        // 날짜
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = currentDate.getDate().toString().padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
 
-      const addReview = await addDoc(collection(db, categoryInEnglish), {
-        bookImg:
-          '' ||
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZc2ak60GYlraruLrL0csnJ4gS4CV30WNSvoPJLnqZEgiUY2ri-qOmoOuYQW2SKpqHAac&usqp=CAU',
-        bookTitle: data.bookTitle,
-        bookWriter: data.bookWriter,
-        reviewTitle: data.reviewTitle,
-        content: reviewContent,
-        createdAt: formattedDate,
-        category: categoryInEnglish,
-        uid: currentUser?.uid,
-      });
+        const addReview = await addDoc(collection(db, categoryInEnglish), {
+          bookImg:
+            '' ||
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZc2ak60GYlraruLrL0csnJ4gS4CV30WNSvoPJLnqZEgiUY2ri-qOmoOuYQW2SKpqHAac&usqp=CAU',
+          bookTitle: data.bookTitle,
+          bookWriter: data.bookWriter,
+          reviewTitle: data.reviewTitle,
+          content: reviewContent,
+          createdAt: formattedDate,
+          category: categoryInEnglish,
+          uid: currentUser?.uid,
+          nickname: reviewNickname,
+          likes: 0,
+        });
 
-      console.log('리뷰 저장 성공');
-    } catch (error) {
-      console.log('리뷰 저장 실패:', error);
+        navigate(`/${categoryInEnglish}`);
+        console.log('리뷰 저장 성공');
+      } catch (error) {
+        console.log('리뷰 저장 실패:', error);
+      }
     }
   };
 
