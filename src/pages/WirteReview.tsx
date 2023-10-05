@@ -4,7 +4,6 @@ import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
-import ToastEditor from '../components/review/ToastEditor';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
@@ -38,10 +37,6 @@ const WriteReview = () => {
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     setCategoryVisible(!categoryVisible);
-  };
-
-  const handleEditorContentChange = (newContent: string) => {
-    setReviewContent(newContent);
   };
 
   // 등록 버튼 함수
@@ -124,8 +119,6 @@ const WriteReview = () => {
               placeholder="리뷰 제목을 입력해주세요."
               spellCheck="false"
             />
-
-            <ToastEditor onContentChange={handleEditorContentChange} />
 
             <ButtonsArea>
               <RegisterBtn type="submit">등록</RegisterBtn>
