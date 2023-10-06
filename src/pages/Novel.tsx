@@ -9,6 +9,7 @@ import { getDocs, collection } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Paging from '../components/Pagination';
 
 interface ReviewPostInfo {
   reviewId: string;
@@ -27,6 +28,14 @@ const Novel = () => {
   const navigate = useNavigate();
 
   const [reviews, setReviews] = useState<ReviewPostInfo[]>([]);
+
+  // 페이지네이션
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const reviewPerPage = 5;
+  const totalreview = reviews.length;
+  const indexOfLastReview = currentPage * reviewPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewPerPage;
+  const reviewsToDisplay = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -74,10 +83,10 @@ const Novel = () => {
 
       <ReviewWrapper>
         <Title>소설</Title>
-        <ReviewItemsUl>
-          {reviews.map((review, index) => (
+        <ReviewListUl>
+          {reviewsToDisplay.map((review, index) => (
             <ReviewItemLi key={review.reviewId}>
-              <ReviewNumber>{index + 1}</ReviewNumber>
+              <ReviewNumber>{(currentPage - 1) * reviewPerPage + index + 1}</ReviewNumber>
 
               <BookImage src={review.bookImg} alt={review.bookTitle} />
 
@@ -102,7 +111,9 @@ const Novel = () => {
               </ReviewItemInfo>
             </ReviewItemLi>
           ))}
-        </ReviewItemsUl>
+        </ReviewListUl>
+
+        <Paging page={currentPage} count={totalreview} itemsPerPage={reviewPerPage} setPage={setCurrentPage} />
 
         <WriteBtnLink to="/writeReview" onClick={handleWriteBtnClick}>
           <WriteIcon icon={faPen} />
@@ -132,7 +143,7 @@ const Title = styled.h2`
   margin: 100px 0 50px 0;
 `;
 
-const ReviewItemsUl = styled.ul`
+const ReviewListUl = styled.ul`
   width: 100%;
   border-top: 1px solid var(--signup-input);
 `;
