@@ -49,27 +49,27 @@ const PaginationWrapper = styled.div`
     margin-right: 3px;
   }
 
-  ul.pagination li:first-child {
+  ul.pagination li:first-of-type {
     border-radius: 5px 0 0 5px;
   }
 
-  ul.pagination li:first-child a {
+  ul.pagination li:first-of-type a {
     font-size: 20px;
   }
 
-  ul.pagination li:last-child {
+  ul.pagination li:last-of-type {
     border-radius: 0 5px 5px 0;
   }
 
-  ul.pagination li:last-child a {
+  ul.pagination li:last-of-type a {
     font-size: 20px;
   }
 
-  ul.pagination li:nth-child(2) a {
+  ul.pagination li:nth-of-type(2) a {
     font-size: 20px;
   }
 
-  ul.pagination li:nth-last-child(2) a {
+  ul.pagination li:nth-last-of-type(2) a {
     font-size: 20px;
   }
 
