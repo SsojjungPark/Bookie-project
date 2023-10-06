@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
@@ -10,16 +10,16 @@ interface allReviews {
   bookTitle: string;
   bookWriter: string;
   reviewTitle: string;
+  category: string;
+  reviewId: string;
 }
 
 const Searching = () => {
-  const { category } = useParams();
-  const { id: reviewId } = useParams();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [reviews, setReviews] = useState<allReviews[]>([]);
   const [keyword, setKeyword] = useState<string>('');
-  const [filteredReview, setFilteredReviews] = useState<allReviews[]>([]);
+  const [filteredReviews, setFilteredReviews] = useState<allReviews[]>([]);
   const [showSearchResult, setShowSearchResult] = useState<boolean>(false);
 
   const onChageData = (e: React.FormEvent<HTMLInputElement>) => {
@@ -47,8 +47,8 @@ const Searching = () => {
     setShowSearchResult(true);
   };
 
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+  const handleOutsideClick = () => {
+    if (filteredReviews.length === 0) {
       setShowSearchResult(false);
     }
   };
@@ -65,6 +65,8 @@ const Searching = () => {
             bookTitle: doc.data().bookTitle,
             bookWriter: doc.data().bookWriter,
             reviewTitle: doc.data().reviewTitle,
+            category: doc.data().category,
+            reviewId: doc.id,
           }));
 
           allReviewData.push(...collectionData);
@@ -72,18 +74,12 @@ const Searching = () => {
 
         setReviews(allReviewData);
         updateFilteredReviews(keyword);
-
-        document.addEventListener('mousedown', handleOutsideClick);
       } catch (error) {
         console.log('Error: ', error);
       }
     };
 
     fetchReview();
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
   }, []);
 
   return (
@@ -101,9 +97,9 @@ const Searching = () => {
       {showSearchResult && (
         <AutoSearchCon>
           <AutoSearchUl>
-            {filteredReview.map((review, index) => (
+            {filteredReviews.map((review, index) => (
               <AutoSearchDataLi key={index}>
-                <StyledLink to={`/${category}/${reviewId}`}>
+                <StyledLink to={`/${review.category}/${review.reviewId}`}>
                   {review.bookTitle} - {review.bookWriter} - {review.reviewTitle}
                 </StyledLink>
               </AutoSearchDataLi>
