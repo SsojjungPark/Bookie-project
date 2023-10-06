@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase-config';
@@ -7,12 +7,14 @@ import Searching from '../components/Searching';
 
 const Header = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   // 로그아웃
   const handleLogout = async () => {
     try {
       if (currentUser) {
         await signOut(auth);
+        window.location.reload();
       }
     } catch (error) {
       console.log('로그아웃 실패: ', error);
