@@ -3,12 +3,12 @@ import Header from '../components/Header';
 import Comment from '../components/comment/Comment';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faHeart, faCommentDots } from '@fortawesome/free-regular-svg-icons';
-import { faEllipsisVertical, faStar as fullStar } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faCommentDots } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { doc, collection, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, collection, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import CommentForm from '../components/comment/CommentForm';
 import CommentList from '../components/comment/CommentList';
@@ -30,6 +30,7 @@ const ReviewPost = () => {
   const { currentUser } = useAuth();
   const { id: reviewId } = useParams();
   const { category } = useParams();
+  const navigate = useNavigate();
 
   const [review, setReview] = useState<ReviewDatasType | null>(null);
   const [commentCount, setCommentCount] = useState<number>(0);
@@ -44,6 +45,22 @@ const ReviewPost = () => {
   const isCurrentUserReview = currentUser?.uid === review?.uid;
   const handleToggleDotsBtnClick = () => {
     setVisibleBtns(!visibleBtns);
+  };
+
+  const handleDeleteBtn = async () => {
+    const confirmDelete = window.confirm('게시물을 삭제하시겠습니까?');
+
+    if (confirmDelete) {
+      const reviewDocRef = doc(db, `${category}`, `${reviewId}`);
+      try {
+        await deleteDoc(reviewDocRef);
+        console.log('게시물이 삭제되었습니다.');
+
+        navigate(`/${category}`);
+      } catch (error) {
+        console.log('게시물 삭제 중 오류 발생: ', error);
+      }
+    }
   };
 
   // 좋아요 업데이트
@@ -144,8 +161,7 @@ const ReviewPost = () => {
             <ReviewArea>
               <ReviewTitleWrapper>
                 <ReviewTitle>{review?.reviewTitle}</ReviewTitle>
-                <BookmarkIcon icon={faStar} />
-                <BookmarkedIcon icon={fullStar} />
+
                 {isCurrentUserReview && (
                   <BtnsContainer>
                     <DotsIconWrapper onClick={handleToggleDotsBtnClick}>
@@ -154,7 +170,7 @@ const ReviewPost = () => {
                     {visibleBtns && (
                       <BtnsWrapperUl>
                         <EditBtn>수정</EditBtn>
-                        <DeleteBtn>삭제</DeleteBtn>
+                        <DeleteBtn onClick={handleDeleteBtn}>삭제</DeleteBtn>
                       </BtnsWrapperUl>
                     )}
                   </BtnsContainer>
