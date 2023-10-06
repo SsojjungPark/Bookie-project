@@ -1,3 +1,4 @@
+import styled from '@emotion/styled';
 import { useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -46,8 +47,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({ editorOnChange }) => {
 
   return (
     <>
-      <ReactQuill
-        style={{ width: '100%', height: '500px' }}
+      <StyledQuill
         value={text}
         ref={quillRef}
         theme="snow"
@@ -60,3 +60,18 @@ const QuillEditor: React.FC<QuillEditorProps> = ({ editorOnChange }) => {
 };
 
 export default QuillEditor;
+
+const StyledQuill = styled(ReactQuill)`
+  width: 100%;
+  background-color: var(--white-color);
+
+  .ql-toolbar {
+    border: 1px solid var(--signup-input);
+    background-color: #eeeeee;
+  }
+
+  .ql-container {
+    border: 1px solid var(--signup-input);
+    height: 500px;
+  }
+`;
