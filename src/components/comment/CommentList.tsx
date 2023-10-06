@@ -42,6 +42,8 @@ const CommentList: React.FC<CommentCountProps> = ({ onCommentCountChange }) => {
         };
       });
 
+      CommentData.sort((a, b) => b.commentDate.localeCompare(a.commentDate));
+
       setComments(CommentData);
 
       const commentCount = CommentData.length;
