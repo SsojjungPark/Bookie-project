@@ -1,10 +1,9 @@
 import styled from '@emotion/styled';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '../config/firebase-config';
+import Searching from '../components/Searching';
 
 const Header = () => {
   const { currentUser } = useAuth();
@@ -42,10 +41,8 @@ const Header = () => {
         </Nav>
 
         <HeaderRight>
-          <SearchContaienr>
-            <InputSearch type="text" placeholder="검색어를 입력해주세요." />
-            <SearchIcon icon={faMagnifyingGlass} />
-          </SearchContaienr>
+          <Searching />
+
           {currentUser ? (
             <AfterLoginArea>
               <ProfileImg
@@ -129,38 +126,6 @@ const HeaderRight = styled.div`
   display: flex;
   align-items: center;
   margin-left: auto;
-`;
-
-const SearchContaienr = styled.div`
-  position: relative;
-  width: 230px;
-  margin-right: 30px;
-`;
-
-const InputSearch = styled.input`
-  width: 230px;
-  height: 32px;
-  padding: 0 25px 0 10px;
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid;
-  font-size: 14px;
-  color: var(--black-color);
-
-  &:focus {
-    outline: none;
-  }
-
-  &::placeholder {
-    font-size: 13px;
-    color: var(--signup-input);
-  }
-`;
-
-const SearchIcon = styled(FontAwesomeIcon)`
-  position: absolute;
-  top: 7px;
-  right: 10px;
 `;
 
 const GoToWrapper = styled.div`
