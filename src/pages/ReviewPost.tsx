@@ -4,7 +4,7 @@ import Comment from '../components/comment/Comment';
 import Footer from '../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faHeart, faCommentDots } from '@fortawesome/free-regular-svg-icons';
-import { faStar as fullStar } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisVertical, faStar as fullStar } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import { doc, collection, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import CommentForm from '../components/comment/CommentForm';
 import CommentList from '../components/comment/CommentList';
+import { useAuth } from '../context/AuthContext';
 
 interface ReviewDatasType {
   bookImg: string;
@@ -22,17 +23,26 @@ interface ReviewDatasType {
   createdAt: string;
   content: string;
   likes: number;
+  uid: string;
 }
 
 const ReviewPost = () => {
-  const [review, setReview] = useState<ReviewDatasType | null>(null);
+  const { currentUser } = useAuth();
   const { id: reviewId } = useParams();
   const { category } = useParams();
 
+  const [review, setReview] = useState<ReviewDatasType | null>(null);
   const [commentCount, setCommentCount] = useState<number>(0);
+  const [visibleBtns, setVisibleBtns] = useState<boolean>(false);
 
   const handleCommentCountChange = (count: number) => {
     setCommentCount(count);
+  };
+
+  // 수정, 삭제 버튼 토글
+  const isCurrentUserReview = currentUser?.uid === review?.uid;
+  const handleToggleDotsBtnClick = () => {
+    setVisibleBtns(!visibleBtns);
   };
 
   useEffect(() => {
@@ -74,6 +84,19 @@ const ReviewPost = () => {
                 <ReviewTitle>{review?.reviewTitle}</ReviewTitle>
                 <BookmarkIcon icon={faStar} />
                 <BookmarkedIcon icon={fullStar} />
+                {isCurrentUserReview && (
+                  <BtnsContainer>
+                    <DotsIconWrapper onClick={handleToggleDotsBtnClick}>
+                      <DotsIcon icon={faEllipsisVertical} />
+                    </DotsIconWrapper>
+                    {visibleBtns && (
+                      <BtnsWrapperUl>
+                        <EditBtn>수정</EditBtn>
+                        <DeleteBtn>삭제</DeleteBtn>
+                      </BtnsWrapperUl>
+                    )}
+                  </BtnsContainer>
+                )}
               </ReviewTitleWrapper>
               <UserInfo>
                 <ProfileImg
@@ -196,6 +219,58 @@ const BookmarkedIcon = styled(FontAwesomeIcon)`
     cursor: pointer;
   }
 `;
+
+const BtnsContainer = styled.div`
+  position: relative;
+  margin-left: auto;
+`;
+
+const DotsIconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 22px;
+
+  &: hover {
+    cursor: pointer;
+  }
+`;
+
+const DotsIcon = styled(FontAwesomeIcon)`
+  font-size: 18px;
+  color: var(--signup-input);
+`;
+
+const BtnsWrapperUl = styled.ul`
+  position: absolute;
+  right: 0;
+  width: 100px;
+  padding-top: 5px;
+  border-radius: var(--border-radius);
+  background-color: var(--white-color);
+  box-shadow: 0 1px 12px 0 rgba(0, 0, 0, 0.09);
+
+  li {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 15px;
+    margin-bottom: 5px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  li: hover {
+    cursor: pointer;
+    text-decoration: underline;
+    background-color: #f5f6f8;
+  }
+`;
+
+const EditBtn = styled.li``;
+
+const DeleteBtn = styled.li``;
 
 const UserInfo = styled.div`
   display: flex;
