@@ -10,6 +10,7 @@ import { db } from '../config/firebase-config';
 import { useAuth } from '../context/AuthContext';
 import QuillEditor from '../components/review/QuillEditor';
 import { useNavigate } from 'react-router-dom';
+import { Quill } from 'react-quill';
 
 interface Inputs {
   bookImg: string;
@@ -250,21 +251,6 @@ const CategoryOptionLi = styled.li`
   }
 `;
 
-const InputReviewTitle = styled.input`
-  margin-bottom: 10px;
-  width: 100%;
-  height: 38px;
-  border: 1px solid var(--signup-input);
-  padding: 0 10px;
-  outline: none;
-  font-size: 14px;
-
-  &::placeholder {
-    font-size: 13px;
-    color: var(--placehodler-gray);
-  }
-`;
-
 const BookInfo = styled.div`
   display: flex;
   justify-content: space-between;
@@ -290,6 +276,21 @@ const BookInfo = styled.div`
 const InputBookTitle = styled.input``;
 
 const InputBookWriter = styled.input``;
+
+const InputReviewTitle = styled.input`
+  margin-bottom: 10px;
+  width: 100%;
+  height: 38px;
+  border: 1px solid var(--signup-input);
+  padding: 0 10px;
+  outline: none;
+  font-size: 14px;
+
+  &::placeholder {
+    font-size: 13px;
+    color: var(--placehodler-gray);
+  }
+`;
 
 const ButtonsArea = styled.div`
   float: right;
