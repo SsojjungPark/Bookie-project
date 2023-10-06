@@ -74,6 +74,8 @@ const Novel = () => {
       navigate('/writeReview');
     } else {
       alert('리뷰를 작성하려면 로그인이 필요합니다.');
+
+      window.location.href = '/novel';
     }
   };
 
