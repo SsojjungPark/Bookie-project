@@ -8,7 +8,7 @@ import { faEllipsisVertical, faStar as fullStar } from '@fortawesome/free-solid-
 import { faHeart as fullHeart } from '@fortawesome/free-solid-svg-icons';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { doc, collection, getDoc } from 'firebase/firestore';
+import { doc, collection, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase-config';
 import CommentForm from '../components/comment/CommentForm';
 import CommentList from '../components/comment/CommentList';
@@ -34,6 +34,7 @@ const ReviewPost = () => {
   const [review, setReview] = useState<ReviewDatasType | null>(null);
   const [commentCount, setCommentCount] = useState<number>(0);
   const [visibleBtns, setVisibleBtns] = useState<boolean>(false);
+  const [likeBtn, setLikeBtn] = useState<boolean>(false);
 
   const handleCommentCountChange = (count: number) => {
     setCommentCount(count);
@@ -43,6 +44,67 @@ const ReviewPost = () => {
   const isCurrentUserReview = currentUser?.uid === review?.uid;
   const handleToggleDotsBtnClick = () => {
     setVisibleBtns(!visibleBtns);
+  };
+
+  // 좋아요 업데이트
+  const updateLikes = async (newLike: number) => {
+    const reviewDocRef = doc(db, `${category}`, `${reviewId}`);
+
+    try {
+      await updateDoc(reviewDocRef, { likes: newLike });
+      console.log('좋아요 +1 업데이트 성공');
+    } catch (error) {
+      console.log('좋아요 업데이트 실패: ', error);
+    }
+  };
+
+  const handleLikeClick = async () => {
+    if (currentUser) {
+      if (likeBtn) {
+        // 이미 좋아요를 누른 상태인 경우, 좋아요 취소 로직
+        setLikeBtn(false);
+
+        // firestore의 likes 필드 -1
+        if (review && review.likes > 0) {
+          const newLikes = review.likes - 1;
+          await updateLikes(newLikes);
+
+          // 화면에 숫자 바로 업데이트
+          setReview((prevReview) => {
+            if (prevReview) {
+              return {
+                ...prevReview,
+                likes: newLikes,
+              };
+            }
+
+            return prevReview;
+          });
+        }
+      } else {
+        // 좋아요를 누르지 않은 상태인 경우, 좋아요 로직 추가
+        setLikeBtn(true);
+
+        // firestore의 likes 필드 +1
+        if (review) {
+          const newLikes = review.likes + 1;
+          await updateLikes(newLikes);
+
+          setReview((prevReview) => {
+            if (prevReview) {
+              return {
+                ...prevReview,
+                likes: newLikes,
+              };
+            }
+
+            return prevReview;
+          });
+        }
+      }
+    } else {
+      alert('로그인한 사용자만 좋아요를 누를 수 있습니다.');
+    }
   };
 
   useEffect(() => {
@@ -114,12 +176,23 @@ const ReviewPost = () => {
           </ReviewContainer>
 
           <LikeCommentWrapper>
-            <LikeArea>
-              <LikeIcon icon={faHeart} />
-              <LikedIcon icon={fullHeart} />
-              좋아요
-              <span>{review?.likes}</span>
-            </LikeArea>
+            {currentUser ? (
+              <LikeArea>
+                {likeBtn ? (
+                  <LikedIcon icon={fullHeart} onClick={handleLikeClick} />
+                ) : (
+                  <LikeIcon icon={faHeart} onClick={handleLikeClick} />
+                )}
+                좋아요
+                <span>{review?.likes}</span>
+              </LikeArea>
+            ) : (
+              <LikeArea>
+                <LikedIcon icon={fullHeart} />
+                좋아요
+                <span>{review?.likes}</span>
+              </LikeArea>
+            )}
             <CommentArea>
               <CommentIcon icon={faCommentDots} />
               댓글
