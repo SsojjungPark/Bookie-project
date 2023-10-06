@@ -1,12 +1,17 @@
 ![header](https://capsule-render.vercel.app/api?type=wave&color=caa477&height=300&section=header&text=Bookie%20Project&fontSize=88&fontColor=ffffff)
 
-<center>제로베이스 개인프로젝트</center>
+<div align=center>
+제로베이스 개인프로젝트
 <br />
-<center>책을 사기 전에 여러 도서 구매 사이트나 블로그에서 리뷰를 찾아보는 것이 불편해 하나의 사이트에서 정보를 얻고 싶어 기획한 프로젝트입니다.</center>
-<br/>
-<center>Bookie는 Eating a cookie while reading a book, 쿠키를 즐기며 여유롭개 책을 읽자는 의미로 📕 Book + 🍪 Cookie 의 조합으로 탄생한 이름입니다.</center>
-<br/>
+책을 사기 전에 여러 도서 구매 사이트나 블로그에서 리뷰를 찾아보는 것이 불편해 하나의 사이트에서 정보를 얻고 싶어 기획한 프로젝트입니다.
+
+Bookie는 Eating a cookie while reading a book, 쿠키를 즐기며 여유롭개 책을 읽자는 의미로 📕 Book + 🍪 Cookie 의 조합으로 탄생한 이름입니다.
+
+</div>
+<br />
 <hr />
+
+<br />
 
 ## 📆 프로젝트 기간
 
