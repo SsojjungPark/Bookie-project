@@ -165,11 +165,7 @@ const WriteReview = () => {
             />
             <QuillEditor editorOnChange={handleEditorChange} />
 
-            <ButtonsArea>
-              <RegisterBtn type="submit">등록</RegisterBtn>
-              <EditBtn type="button">수정</EditBtn>
-              <DeleteBtn type="button">삭제</DeleteBtn>
-            </ButtonsArea>
+            <RegisterBtn type="submit">등록</RegisterBtn>
           </form>
         </FormWrapper>
       </WriteReviewContainer>
@@ -292,36 +288,19 @@ const InputReviewTitle = styled.input`
   }
 `;
 
-const ButtonsArea = styled.div`
+const RegisterBtn = styled.button`
   float: right;
   margin-top: 35px;
-
-  button {
-    width: 64px;
-    height: 34px;
-    border: none;
-    border-radius: var(--border-radius);
-    font-weight: 500;
-    font-size: 13px;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-`;
-
-const RegisterBtn = styled.button`
+  width: 64px;
+  height: 34px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 13px;
   color: var(--white-color);
   background-color: var(--light-brown);
-`;
 
-const EditBtn = styled.button`
-  backgroun-color: #e7e7e7;
-  color: var(--black-color);
-  margin-right: 10px;
-`;
-
-const DeleteBtn = styled.button`
-  background-color: var(--orange-color);
-  color: var(--white-color);
+  &:hover {
+    cursor: pointer;
+  }
 `;
